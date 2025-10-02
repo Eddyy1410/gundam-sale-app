@@ -46,5 +46,4 @@ yarn-error.log*
 # ===============================================
 # Ignore any local application properties/yml files
 # Create application-local.properties.example to guide others
-application-local.properties
-application-local.yml
+application.properties
