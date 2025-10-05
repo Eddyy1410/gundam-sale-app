@@ -7,11 +7,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-@Data // Getter, Setter, RequiredConstructor, ToString, EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRegisterRequest {
+public class UserUpdateRequest {
 
     @NotBlank(message = "BLANK_EMAIL")
     String email;

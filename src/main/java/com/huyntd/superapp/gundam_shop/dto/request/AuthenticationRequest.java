@@ -7,20 +7,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-@Data // Getter, Setter, RequiredConstructor, ToString, EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRegisterRequest {
+public class AuthenticationRequest {
 
     @NotBlank(message = "BLANK_EMAIL")
     String email;
 
     @NotBlank(message = "BLANK_PASSWORD")
     String password;
-
-    String fullName;
-
-    String phone;
 
 }

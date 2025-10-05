@@ -1,0 +1,2 @@
+Vì sao ko dùng mẹ luôn entity object model để response từ service lên controller mà phải xài DTO response?
+- Vì trong entity object model có những dữ liệu nhạy cảm như password nên là phải thiết kế lại DTO response chỉ chứa những thông tin cần thiết để sử dụng và không nhạy cảm

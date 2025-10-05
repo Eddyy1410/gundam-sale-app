@@ -14,4 +14,5 @@ public class Configuration {
         return new OpenAPI().info(new Info().title("Gundam Shop API")
                 .version("v1.0.0"));
     }
+
 }
