@@ -54,7 +54,7 @@
 -   **Ngôn ngữ:** Java 17+
 -   **Cơ sở dữ liệu:** MySQL / SQL Server
 -   **Xác thực:** JWT (JSON Web Tokens)
--   **Build Tool:** Maven / Gradle
+-   **Build Tool:** Maven
 -   **API Documentation:** Swagger (OpenAPI 3)
 
 ## Kiến trúc
