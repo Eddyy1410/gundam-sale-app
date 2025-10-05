@@ -33,7 +33,7 @@ public class UserServiceImplement implements UserService {
         User newUser = userMapper.toUser(request);
         newUser.setRole(UserRole.CUSTOMER);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(newUser);
 

@@ -9,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,5 +51,21 @@ public class User {
     @LastModifiedDate
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    Cart cart;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    List<Notification> notifications = new ArrayList<>();
+
+    @OneToOne(mappedBy = "customer")
+    Conversation customerConversation;
+
+    @OneToMany(mappedBy = "staff", fetch = FetchType.LAZY)
+    List<Conversation> staffConversations = new ArrayList<>();
+
 }
 

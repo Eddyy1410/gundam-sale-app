@@ -1,0 +1,16 @@
+Vấn đề kinh điển của LAZY Loading: LazyInitializationException
+- Đây là lỗi mà mọi lập trình viên Java đều gặp.
+- Nó xảy ra khi: Bạn cố gắng truy cập vào một collection LAZY (ví dụ category.getProducts()) sau khi session Hibernate đã bị đóng. Session thường được quản lý bởi Spring và nó sẽ bị đóng ngay khi phương thức trong tầng Service (được đánh dấu @Transactional) kết thúc.
+Ví dụ gây lỗi:
+
+// Trong Controller
+@GetMapping("/categories/{id}")
+public String showCategory(@PathVariable Integer id) {
+    Category category = categoryService.findById(id); // Phương thức này kết thúc, transaction đóng
+    int productCount = category.getProducts().size(); // LỖI! Session đã đóng, không thể tải products
+    return "category-view";
+}
+
+------------------------------------------------------------------
+
+
