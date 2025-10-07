@@ -89,6 +89,7 @@ public class AuthenticationServiceImplement implements AuthenticationService {
 
         var token = generateToken(request.getEmail());
 
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
