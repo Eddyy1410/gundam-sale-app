@@ -54,7 +54,7 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
-    public User updateUser(String userId, UserUpdateRequest request) {
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = getUser(userId);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -65,7 +65,7 @@ public class UserServiceImplement implements UserService {
             } else throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     @Override

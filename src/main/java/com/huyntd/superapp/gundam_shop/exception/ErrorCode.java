@@ -12,8 +12,8 @@ public enum ErrorCode {
     BLANK_EMAIL(1002, "Email must not be blank!"),
     BLANK_PASSWORD(1003, "Password must not be blank!"),
     USER_NOT_EXISTED(1004, "User not existed!"),
-    USER_EXISTED(2000, "Email already existed!")
-
+    USER_EXISTED(1005, "Email already existed!"),
+    UNAUTHENTICATED(1006, "Unauthenticated!")
     ;
 
     int code;

@@ -37,14 +37,16 @@ public class UserController {
     }
 
     @GetMapping("/")
-    List<User> getAllUsers() {
-        return userService.getUser();
+    ApiResponse<List<User>> getAllUsers() {
+        return ApiResponse.<List<User>>builder()
+                .result(userService.getUser())
+                .build();
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<User> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest userUpdateRequest) {
-        return ApiResponse.<User>builder()
-                .result(userService.updateUser(userId, userUpdateRequest))
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUser(userId, request))
                 .build();
     }
 

@@ -42,11 +42,11 @@ public class GlobalExceptionHandler {
             System.out.println(e.getMessage());
         }
 
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        apiResponse.setSuccess(false);
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.badRequest().body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .success(false)
+                .build());
     }
 
 }
