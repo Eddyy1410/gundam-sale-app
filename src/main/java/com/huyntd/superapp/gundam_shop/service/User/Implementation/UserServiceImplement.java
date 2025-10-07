@@ -28,6 +28,8 @@ public class UserServiceImplement implements UserService {
 
     UserMapper userMapper;
 
+    PasswordEncoder passwordEncoder;
+
     private User getUser(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -39,7 +41,6 @@ public class UserServiceImplement implements UserService {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User newUser = userMapper.toUser(request);
         newUser.setRole(UserRole.CUSTOMER);

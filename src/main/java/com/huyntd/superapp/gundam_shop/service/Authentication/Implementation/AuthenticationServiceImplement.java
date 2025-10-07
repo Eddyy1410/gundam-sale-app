@@ -59,7 +59,8 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("role", user.getRole())
+                // Bắt buộc đặt tên claim là "scope" nó sẽ được mapping để thành scope dùng cho authorization
+                .claim("scope", user.getRole())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -88,7 +89,6 @@ public class AuthenticationServiceImplement implements AuthenticationService {
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         var token = generateToken(request.getEmail());
-
 
         return AuthenticationResponse.builder()
                 .token(token)
