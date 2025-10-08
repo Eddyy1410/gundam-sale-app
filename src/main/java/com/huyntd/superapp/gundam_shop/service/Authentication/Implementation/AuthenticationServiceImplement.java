@@ -59,7 +59,9 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                // Bắt buộc đặt tên claim là "scope" nó sẽ được mapping để thành scope dùng cho authorization
+                // đặt tên claim là "scope" nó sẽ được MẶC ĐỊNH mapping "SCOPE_****" để thành scope dùng cho authorization
+                // Có thể thay đổi mặc định "SCOPPE_****" này thành "ROLE_***" tùy chỉnh bằng cách
+                // Setup jwtAuthenticationConverter ở SecurityConfig
                 .claim("scope", user.getRole())
                 .build();
 

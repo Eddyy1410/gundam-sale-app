@@ -25,8 +25,6 @@ public class AuthenticationController {
 
     @PostMapping("/log-in")
     ApiResponse<AuthenticationResponse> logIn(@RequestBody @Valid AuthenticationRequest request) {
-        System.out.println(authenticationService.authenticate(request).getToken());
-
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(authenticationService.authenticate(request))
                 .build();
