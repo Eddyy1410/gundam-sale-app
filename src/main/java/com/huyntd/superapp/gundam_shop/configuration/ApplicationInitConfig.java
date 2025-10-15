@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.controller;
+package com.huyntd.superapp.gundam_shop.configuration;
 
 import com.huyntd.superapp.gundam_shop.model.User;
 import com.huyntd.superapp.gundam_shop.model.enums.UserRole;

@@ -1,5 +1,6 @@
 package com.huyntd.superapp.gundam_shop.service.User.Implementation;
 
+import com.huyntd.superapp.gundam_shop.dto.request.UserOAuth2RegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -29,11 +31,6 @@ public class UserServiceImplement implements UserService {
     UserMapper userMapper;
 
     PasswordEncoder passwordEncoder;
-
-    private User getUser(String userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-    }
 
     @Override
     public UserResponse create(UserRegisterRequest request) {
@@ -49,6 +46,17 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
+    public Optional<User> createOAuth2(UserOAuth2RegisterRequest request) {
+        return Optional.of(userRepository.findByEmail(request.getEmail())
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .email(request.getEmail())
+                        .phone(request.getPhone())
+                        .fullName(request.getFullName())
+                        .role(UserRole.CUSTOMER)
+                        .build())));
+    }
+
+    @Override
     public UserResponse getCustomer(String userId) {
         return userMapper.toUserResponse(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
@@ -56,7 +64,8 @@ public class UserServiceImplement implements UserService {
 
     @Override
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = getUser(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -73,4 +82,5 @@ public class UserServiceImplement implements UserService {
     public List<User> getUser() {
         return userRepository.findAll();
     }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,7 +28,7 @@ public class SecurityConfig {
 
     static final String[] PUBLIC_POST_ENDPOINTS = {
             "/user/",
-            "/auth/log-in", "/auth/introspect"
+            "/auth/log-in", "/auth/introspect", "auth/google-android"
     };
 
     static final String[] SWAGGER_ENDPOINTS = {
@@ -66,6 +67,7 @@ public class SecurityConfig {
                                     //.hasAuthority("SCOPE_ADMIN")
                                     .hasRole(UserRole.ADMIN.name())
                                 .anyRequest().authenticated())
+                .oauth2Login(Customizer.withDefaults())
                 //Xử lý bearer token
                 //chỗ này phía BE của mình sẽ đóng vai trò là resource server để xử lý token gửi về
                 //nên sẽ dùng oauth2ResourceServer
@@ -105,5 +107,7 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
+
+
 
 }
