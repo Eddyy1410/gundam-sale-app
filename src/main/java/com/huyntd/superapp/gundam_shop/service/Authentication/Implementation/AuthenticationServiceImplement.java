@@ -70,7 +70,8 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                 // đặt tên claim là "scope" nó sẽ được MẶC ĐỊNH mapping "SCOPE_****" để thành scope dùng cho authorization
                 // Có thể thay đổi mặc định "SCOPPE_****" này thành "ROLE_***" tùy chỉnh bằng cách
                 // Setup jwtAuthenticationConverter ở SecurityConfig
-                .claim("scope", user.getRole())
+                .claim("role", user.getRole())
+                .claim("id", user.getId())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
