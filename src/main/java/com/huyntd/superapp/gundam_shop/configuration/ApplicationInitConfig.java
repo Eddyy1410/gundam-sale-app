@@ -2,6 +2,7 @@ package com.huyntd.superapp.gundam_shop.configuration;
 
 import com.huyntd.superapp.gundam_shop.model.User;
 import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
+import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
 import com.huyntd.superapp.gundam_shop.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,12 @@ public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
+    UserRepository userRepository;
+
+    ProductRepository productRepository;
+
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository) {
+    ApplicationRunner applicationRunner() {
         return args -> {
             if(userRepository.findByEmail("admin@huyntd.com").isEmpty()) {
                 userRepository.save(User.builder()
@@ -31,6 +36,9 @@ public class ApplicationInitConfig {
                         .build()
                 );
                 log.warn("admin@huyntd.com has been created with default password: admin, please change it!");
+            }
+            if (productRepository.findAll().isEmpty()) {
+                log.warn(productRepository.findAll().toString());
             }
         };
     }

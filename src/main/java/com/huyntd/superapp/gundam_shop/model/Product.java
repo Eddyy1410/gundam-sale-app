@@ -37,8 +37,8 @@ public class Product {
     @Column(name = "price", nullable = false, precision = 18, scale = 2)
     BigDecimal price;
 
-    @Column(name = "image_url")
-    String imageUrl;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    List<ProductImage> productImages;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
