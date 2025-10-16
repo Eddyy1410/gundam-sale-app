@@ -19,7 +19,7 @@ public class ProductImage {
     @Column(name = "id")
     int id;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 500)
     String imageUrl;
 
     @ManyToOne
