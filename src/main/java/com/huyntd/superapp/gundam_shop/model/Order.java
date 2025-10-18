@@ -8,7 +8,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,10 +27,6 @@ public class Order {
     @GeneratedValue
     @Column(name = "id")
     int id;
-
-    @OneToOne
-    @JoinColumn(name = "cart_id", nullable = false)
-    Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -51,5 +49,11 @@ public class Order {
 
     @OneToOne(mappedBy = "order")
     Payment payment;
+
+    @Column(name = "total_price", nullable = false, precision = 18, scale = 2)
+    BigDecimal totalPrice;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<OrderItem> orderItems;
 
 }
