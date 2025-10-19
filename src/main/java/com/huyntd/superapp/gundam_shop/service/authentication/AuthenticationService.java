@@ -1,11 +1,10 @@
-package com.huyntd.superapp.gundam_shop.service.Authentication;
+package com.huyntd.superapp.gundam_shop.service.authentication;
 
 import com.huyntd.superapp.gundam_shop.dto.request.AuthenticationRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.GoogleTokenRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.IntrospectRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
-import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
 import com.nimbusds.jose.JOSEException;
 
 import java.io.IOException;
