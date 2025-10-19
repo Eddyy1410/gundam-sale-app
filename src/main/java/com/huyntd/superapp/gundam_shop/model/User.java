@@ -8,8 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -46,11 +46,11 @@ public class User {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    LocalDateTime createdAt;
+    Date createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    LocalDateTime updatedAt;
+    Date updatedAt;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Cart cart;

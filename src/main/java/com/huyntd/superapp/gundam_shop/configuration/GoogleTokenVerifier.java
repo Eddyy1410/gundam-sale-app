@@ -30,12 +30,13 @@ public class GoogleTokenVerifier {
      * @throws GeneralSecurityException Nếu token không hợp lệ (sai chữ ký, hết hạn...).
      * @throws IOException Nếu có lỗi mạng khi giao tiếp với Google.
      */
+
     public GoogleIdToken.Payload verify(String idTokenString) throws GeneralSecurityException, IOException {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
                 .build();
 
-        System.out.println(idTokenString);
+//        System.out.println(idTokenString);
 
         GoogleIdToken idToken = verifier.verify(idTokenString);
 

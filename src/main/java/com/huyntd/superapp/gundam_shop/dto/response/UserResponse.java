@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Data
@@ -23,6 +23,6 @@ public class UserResponse {
 
     String phone;
 
-    LocalDateTime createdAt;
+    Date createdAt;
 
 }

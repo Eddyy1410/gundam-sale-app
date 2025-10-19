@@ -67,7 +67,13 @@ public class SecurityConfig {
                                     //.hasAuthority("SCOPE_ADMIN")
                                     .hasRole(UserRole.ADMIN.name())
                                 .anyRequest().authenticated())
-                .oauth2Login(Customizer.withDefaults())
+                // .oauth2Login chỉ dành cho stateful API (cookie, session)
+                //      |--- LƯU Ý: khái niệm statefull/ stateless mô tả cách SERVER xử lý trạng thái (state) của các phiên làm việc, không phải client
+                //      |--- Tránh nhầm lẫn với sessionManager phía client
+                //      |--- session này là phía backend lưu trong dtb để quản lý state của 1 client
+                // ko có ý nghĩa khi dùng với stateless API (REST api, SPA - Single Page Application web)
+                // --> nên disable tránh các lỗi tiềm ẩn
+                .oauth2Login(oauth2 -> oauth2.disable())
                 //Xử lý bearer token
                 //chỗ này phía BE của mình sẽ đóng vai trò là resource server để xử lý token gửi về
                 //nên sẽ dùng oauth2ResourceServer

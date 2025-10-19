@@ -30,6 +30,7 @@ public class UserController {
     ApiResponse<UserResponse> addUser(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.create(userRegisterRequest))
+                .message("User registered successfully!")
                 .build();
     }
 

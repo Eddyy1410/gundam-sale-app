@@ -136,6 +136,8 @@ public class AuthenticationServiceImplement implements AuthenticationService {
 
     @Override
     public AuthenticationResponse processGoogleToken(GoogleTokenRequest request) throws GeneralSecurityException, IOException {
+        // user sau khi đăng nhập Google thành công gửi xuống server "id-token"
+        // GoogleIdToken.Payload là class chứa "bản dịch" sang tiếng Java của phần Payload (phần nội dung) bên trong chuỗi JWT đó
         GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.getIdToken());
         userService.createOAuth2(UserOAuth2RegisterRequest.builder()
                 .email(payload.getEmail())
