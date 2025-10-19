@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.service.User;
+package com.huyntd.superapp.gundam_shop.service.user;
 
 import com.huyntd.superapp.gundam_shop.dto.request.UserOAuth2RegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
