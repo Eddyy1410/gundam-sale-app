@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.service.User.Implementation;
+package com.huyntd.superapp.gundam_shop.service.user.impl;
 
 import com.huyntd.superapp.gundam_shop.dto.request.UserOAuth2RegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
@@ -10,7 +10,7 @@ import com.huyntd.superapp.gundam_shop.mapper.UserMapper;
 import com.huyntd.superapp.gundam_shop.model.User;
 import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
 import com.huyntd.superapp.gundam_shop.repository.UserRepository;
-import com.huyntd.superapp.gundam_shop.service.User.UserService;
+import com.huyntd.superapp.gundam_shop.service.user.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

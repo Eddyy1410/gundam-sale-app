@@ -1,12 +1,11 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
-import com.huyntd.superapp.gundam_shop.dto.request.GoogleTokenRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
 import com.huyntd.superapp.gundam_shop.model.User;
-import com.huyntd.superapp.gundam_shop.service.User.UserService;
+import com.huyntd.superapp.gundam_shop.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ public class UserController {
     ApiResponse<UserResponse> addUser(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.create(userRegisterRequest))
+                .message("User registered successfully!")
                 .build();
     }
 

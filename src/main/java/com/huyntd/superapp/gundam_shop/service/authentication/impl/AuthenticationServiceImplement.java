@@ -1,16 +1,15 @@
-package com.huyntd.superapp.gundam_shop.service.Authentication.Implementation;
+package com.huyntd.superapp.gundam_shop.service.authentication.impl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.huyntd.superapp.gundam_shop.configuration.GoogleTokenVerifier;
 import com.huyntd.superapp.gundam_shop.dto.request.*;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
-import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
 import com.huyntd.superapp.gundam_shop.repository.UserRepository;
-import com.huyntd.superapp.gundam_shop.service.Authentication.AuthenticationService;
-import com.huyntd.superapp.gundam_shop.service.User.UserService;
+import com.huyntd.superapp.gundam_shop.service.authentication.AuthenticationService;
+import com.huyntd.superapp.gundam_shop.service.user.UserService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -136,6 +135,8 @@ public class AuthenticationServiceImplement implements AuthenticationService {
 
     @Override
     public AuthenticationResponse processGoogleToken(GoogleTokenRequest request) throws GeneralSecurityException, IOException {
+        // user sau khi đăng nhập Google thành công gửi xuống server "id-token"
+        // GoogleIdToken.Payload là class chứa "bản dịch" sang tiếng Java của phần Payload (phần nội dung) bên trong chuỗi JWT đó
         GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.getIdToken());
         userService.createOAuth2(UserOAuth2RegisterRequest.builder()
                 .email(payload.getEmail())
