@@ -1,10 +1,9 @@
 package com.huyntd.superapp.gundam_shop.repository;
 
-import java.util.Optional;
-
+import com.huyntd.superapp.gundam_shop.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.huyntd.superapp.gundam_shop.model.User;
+import java.util.Optional;
 
 // save(entity)
 // findById(id) return Optional<Entity>
@@ -12,7 +11,7 @@ import com.huyntd.superapp.gundam_shop.model.User;
 // deleteById(id)
 // delete(entity)
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
 }

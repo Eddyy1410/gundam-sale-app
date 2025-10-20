@@ -1,8 +1,6 @@
 package com.huyntd.superapp.gundam_shop.exception;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
@@ -15,7 +13,6 @@ public enum ErrorCode {
     BLANK_PASSWORD(1003, "Password must not be blank!"),
     USER_NOT_EXISTED(1004, "User not existed!"),
     USER_EXISTED(1005, "Email already existed!"),
-    INVALID_TOKEN(1007, "Invalid or expired token!"),
     UNAUTHENTICATED(1006, "Unauthenticated!")
     ;
 
