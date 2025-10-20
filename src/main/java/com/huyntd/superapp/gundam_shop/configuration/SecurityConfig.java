@@ -1,13 +1,11 @@
 package com.huyntd.superapp.gundam_shop.configuration;
 
-import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +17,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.crypto.spec.SecretKeySpec;
+import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -28,7 +29,7 @@ public class SecurityConfig {
 
     static final String[] PUBLIC_POST_ENDPOINTS = {
             "/user/",
-            "/auth/log-in", "/auth/introspect", "auth/google-android"
+        "/auth/log-in", "/auth/introspect", "/auth/google-android", "/auth/forgot-password", "/auth/reset-password"
     };
 
     static final String[] SWAGGER_ENDPOINTS = {
@@ -61,7 +62,9 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                        // ensure these two endpoints are explicitly anonymous for POST
+                        requests.requestMatchers(HttpMethod.POST, "/auth/forgot-password", "/auth/reset-password").permitAll()
+                                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/user/")
                                     //.hasAuthority("SCOPE_ADMIN")
