@@ -28,7 +28,8 @@ public class SecurityConfig {
 
     static final String[] PUBLIC_POST_ENDPOINTS = {
             "/user/",
-            "/auth/log-in", "/auth/introspect", "auth/google-android"
+            "/auth/log-in", "/auth/introspect", "auth/google-android",
+            "/api/products"
     };
 
     static final String[] SWAGGER_ENDPOINTS = {
@@ -63,6 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
+                                .requestMatchers("/api/products/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/user/")
                                     //.hasAuthority("SCOPE_ADMIN")
                                     .hasRole(UserRole.ADMIN.name())
