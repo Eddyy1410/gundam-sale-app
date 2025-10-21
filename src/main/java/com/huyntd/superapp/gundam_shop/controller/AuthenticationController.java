@@ -4,6 +4,7 @@ import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.AuthenticationRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.GoogleTokenRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.IntrospectRequest;
+import com.huyntd.superapp.gundam_shop.dto.request.LogoutRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
 import com.huyntd.superapp.gundam_shop.service.authentication.AuthenticationService;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
@@ -50,4 +52,10 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        return ApiResponse.<Void>builder()
+                .result(authenticationService.logout(request))
+                .build();
+    }
 }

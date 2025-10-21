@@ -14,6 +14,9 @@ import com.huyntd.superapp.gundam_shop.service.user.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
@@ -45,6 +49,20 @@ public class UserServiceImplement implements UserService {
         return userMapper.toUserResponse(userRepository.save(newUser));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UserResponse createStaff(UserRegisterRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User newUser = userMapper.toUser(request);
+        newUser.setRole(UserRole.STAFF);
+
+        return userMapper.toUserResponse(userRepository.save(newUser));
+    }
+
     @Override
     public Optional<User> createOAuth2(UserOAuth2RegisterRequest request) {
         return Optional.of(userRepository.findByEmail(request.getEmail())
@@ -56,8 +74,9 @@ public class UserServiceImplement implements UserService {
                         .build())));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public UserResponse getCustomer(String userId) {
+    public UserResponse getUser(String userId) {
         return userMapper.toUserResponse(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
@@ -78,9 +97,21 @@ public class UserServiceImplement implements UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public List<User> getUser() {
-        return userRepository.findAll();
+    public List<UserResponse> getUsers() {
+        return userRepository.findAllUsersResponse();
+    }
+
+    @Override
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(name).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toUserResponse(user);
     }
 
 }

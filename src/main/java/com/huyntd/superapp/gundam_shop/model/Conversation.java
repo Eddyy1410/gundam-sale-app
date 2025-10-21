@@ -35,4 +35,7 @@ public class Conversation {
     @Column(name = "status")
     ConversationStatus status;
 
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Message> messages;
+
 }

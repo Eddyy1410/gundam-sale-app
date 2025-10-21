@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -37,6 +37,6 @@ public class Message {
 
     @CreatedDate
     @Column(name = "sent_at", nullable = false, updatable = false)
-    LocalDateTime sentAt;
+    Date sentAt;
 
 }

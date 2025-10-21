@@ -7,6 +7,8 @@ import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
+import com.huyntd.superapp.gundam_shop.model.InvalidatedToken;
+import com.huyntd.superapp.gundam_shop.repository.InvalidatedTokenRepository;
 import com.huyntd.superapp.gundam_shop.repository.UserRepository;
 import com.huyntd.superapp.gundam_shop.service.authentication.AuthenticationService;
 import com.huyntd.superapp.gundam_shop.service.user.UserService;
@@ -31,6 +33,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ import java.util.Date;
 public class AuthenticationServiceImplement implements AuthenticationService {
 
     UserRepository userRepository;
+    InvalidatedTokenRepository invalidatedTokenRepository;
 
     //@NonFinal không cần cái này vì đã khai báo là static (đảm bảo thuộc về class không thuộc về object)
     //Spring tạo và quản lý các bean (object), không quản lý vòng đời của các lớp
@@ -66,6 +70,7 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 // đặt tên claim là "scope" nó sẽ được MẶC ĐỊNH mapping "SCOPE_****" để thành scope dùng cho authorization
                 // Có thể thay đổi mặc định "SCOPPE_****" này thành "ROLE_***" tùy chỉnh bằng cách
                 // Setup jwtAuthenticationConverter ở SecurityConfig
@@ -84,6 +89,31 @@ public class AuthenticationServiceImplement implements AuthenticationService {
             log.error("Cannot create JWT ---> ", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        //JWSVerifier = Json Web Signature Verifier
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        // "giải mã" chuỗi token thô thành một đối tượng có cấu trúc (SignedJWT).
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        // Chỗ này mới thật sự là verify sign của token và sử dụng JWSVerifier đã khai báo phía trên
+        // 1. lấy (header + payload) từ signedJWT
+        // 2. dùng SIGNER_KEY đã truyền vào MACVerifier để tạo ra verifier phía trên
+        // từ (1) và (2) tạo ra 1 sign mới
+        // 3. dùng sign mới vừa tạo so sánh với sign của token gửi đến
+        // ==> Nếu 2 sign giống nhau thì "hợp lệ" else "không hợp lệ"
+        var verified = signedJWT.verify(verifier);
+
+        if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        return signedJWT;
     }
 
     @Override
@@ -111,25 +141,16 @@ public class AuthenticationServiceImplement implements AuthenticationService {
     public IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException {
         var token = request.getToken();
+        boolean isValid = true;
 
-        //JWSVerifier = Json Web Signature Verifier
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        // "giải mã" chuỗi token thô thành một đối tượng có cấu trúc (SignedJWT).
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        // Chỗ này mới thật sự là verify sign của token và sử dụng JWSVerifier đã khai báo phía trên
-        // 1. lấy (header + payload) từ signedJWT
-        // 2. dùng SIGNER_KEY đã truyền vào MACVerifier để tạo ra verifier phía trên
-        // từ (1) và (2) tạo ra 1 sign mới
-        // 3. dùng sign mới vừa tạo so sánh với sign của token gửi đến
-        // ==> Nếu 2 sign giống nhau thì "hợp lệ" else "không hợp lệ"
-        var verified = signedJWT.verify(verifier);
+        try {
+            verifyToken(token);
+        } catch (AppException e) {
+            isValid = false;
+        }
 
         return IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date())) //new Date() lấy thời gian hiện tại
+                .valid(isValid) //new Date() lấy thời gian hiện tại
                 .build();
     }
 
@@ -149,6 +170,21 @@ public class AuthenticationServiceImplement implements AuthenticationService {
                 .token(token)
                 .authenticated(true)
                 .build();
+    }
+
+    @Override
+    public Void logout(LogoutRequest request) throws JOSEException, ParseException {
+        var signedToken = verifyToken(request.getToken());
+
+        String jit = signedToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
+
+        invalidatedTokenRepository.save(InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build());
+
+        return null;
     }
 
 }
