@@ -33,22 +33,37 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getCustomer(@PathVariable String userId) {
+    @PostMapping("/staff")
+    ApiResponse<UserResponse> addStaff(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.getCustomer(userId))
+                .result(userService.createStaff(userRegisterRequest))
+                .message("Staff registered successfully!")
+                .build();
+    }
+
+    @GetMapping("/{userId}")
+    ApiResponse<UserResponse> getUser(@PathVariable String userId) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getUser(userId))
+                .build();
+    }
+
+    @GetMapping("/myInfo")
+    ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
                 .build();
     }
 
     @GetMapping("/")
-    ApiResponse<List<User>> getAllUsers() {
+    ApiResponse<List<UserResponse>> getAllUsers() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         log.info("Username: {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
-        return ApiResponse.<List<User>>builder()
-                .result(userService.getUser())
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.getUsers())
                 .build();
     }
 

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -27,8 +28,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ApplicationInitConfig {
 
-    PasswordEncoder passwordEncoder;
-
     UserRepository userRepository;
 
     ProductRepository productRepository;
@@ -38,7 +37,15 @@ public class ApplicationInitConfig {
     CategoryRepository categoryRepository;
 
     @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
     ApplicationRunner applicationRunner() {
+        // Tiêm passwordEncoder() phía trên vào applicationRunner
+        PasswordEncoder passwordEncoder = passwordEncoder();
+
         return args -> {
             if(userRepository.findByEmail("admin@huyntd.com").isEmpty()) {
                 userRepository.save(User.builder()

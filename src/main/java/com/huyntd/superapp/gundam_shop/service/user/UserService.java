@@ -11,8 +11,10 @@ import java.util.Optional;
 
 public interface UserService {
     UserResponse create(UserRegisterRequest request);
-    UserResponse getCustomer(String userId);
+    UserResponse createStaff(UserRegisterRequest request);
+    UserResponse getUser(String userId);
+    UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdateRequest request);
-    List<User> getUser();
+    List<UserResponse> getUsers();
     Optional<User> createOAuth2(UserOAuth2RegisterRequest request);
 }
