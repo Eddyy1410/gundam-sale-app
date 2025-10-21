@@ -32,7 +32,8 @@ public class SecurityConfig {
 
     static final String[] PUBLIC_POST_ENDPOINTS = {
             "/user/",
-            "/auth/log-in", "/auth/introspect", "auth/google-android", "auth/logout"
+            "/auth/log-in", "/auth/introspect", "auth/google-android", "auth/logout",
+            "/api/products"
     };
 
     static final String[] SWAGGER_ENDPOINTS = {
@@ -52,6 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
+                                .requestMatchers("/api/products/**").permitAll()
                                 .anyRequest().authenticated())
                 // .oauth2Login chỉ dành cho stateful API (cookie, session)
                 //      |--- LƯU Ý: khái niệm statefull/ stateless mô tả cách SERVER xử lý trạng thái (state) của các phiên làm việc, không phải client
