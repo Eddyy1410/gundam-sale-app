@@ -14,7 +14,8 @@ public interface ProductMapper {
 
     @Mapping(target = "categoryId", source = "category.id")
     @Mapping(target = "categoryName", source = "category.name")
-    @Mapping(target = "imageUrls", ignore = true) // Xử lý ở AfterMapping
+//    @Mapping(target = "imageUrls", ignore = true) // Xử lý ở AfterMapping
+    @Mapping(target = "imageUrls", expression = "java(product.getProductImages() == null ? java.util.Collections.emptyList() : product.getProductImages().stream().map(pi -> pi.getImageUrl()).collect(java.util.stream.Collectors.toList()))")
     ProductResponse toDTO(Product product);
 
     @InheritInverseConfiguration(name = "toDTO")
@@ -24,14 +25,4 @@ public interface ProductMapper {
     @Mapping(target = "category", ignore = true) // set trong service
     Product toEntity(ProductCreateRequest request);
 
-    @AfterMapping
-    default void mapImageUrls(@MappingTarget ProductResponse response, Product product) {
-        if (product.getProductImages() != null) {
-            List<String> urls = product.getProductImages()
-                    .stream()
-                    .map(ProductImage::getImageUrl)
-                    .collect(Collectors.toList());
-            response.setImageUrls(urls);
-        }
-    }
 }

@@ -51,6 +51,7 @@ public class ProductController {
             @PathVariable int categoryId,
             Pageable pageable
     ) {
+        System.out.println("đang call api này");
         return ApiResponse.<Page<ProductResponse>>builder()
                 .result(productService.getByCategory(categoryId, pageable))
                 .build();

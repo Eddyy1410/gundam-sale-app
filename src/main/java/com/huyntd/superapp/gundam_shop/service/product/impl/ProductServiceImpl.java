@@ -11,6 +11,7 @@ import com.huyntd.superapp.gundam_shop.repository.ProductImageRepository;
 import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
 import com.huyntd.superapp.gundam_shop.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -37,7 +39,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getAll(Pageable pageable) {
-        return productRepository.findAll(pageable).map(mapper::toDTO);
+//        return productRepository.findAll(pageable).map(mapper::toDTO);
+        Page<Product> products = productRepository.findAll(pageable);
+        products.forEach(p -> log.info("Product entity: id={}, name={}, images={}",
+                p.getId(), p.getName(), p.getProductImages() != null ? p.getProductImages().size() : 0));
+        return products.map(mapper::toDTO);
     }
 
     @Override
