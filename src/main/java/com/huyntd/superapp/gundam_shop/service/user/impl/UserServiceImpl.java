@@ -28,7 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
-public class UserServiceImplement implements UserService {
+public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
 

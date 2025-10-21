@@ -53,7 +53,7 @@ public class CustomeJwtDecoder implements JwtDecoder {
                     .build());
 
             if (!response.isValid())
-                throw new AppException(ErrorCode.INVALID_KEY);
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         } catch (JOSEException | ParseException e) {
             throw new JwtException(e.getMessage());
