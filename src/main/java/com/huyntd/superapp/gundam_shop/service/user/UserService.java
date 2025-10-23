@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface UserService {
     UserResponse create(UserRegisterRequest request);
     UserResponse createStaff(UserRegisterRequest request);
-    UserResponse getUser(String userId);
+    UserResponse getUser(int userId);
     UserResponse getMyInfo();
-    UserResponse updateUser(String userId, UserUpdateRequest request);
+    UserResponse updateUser(int userId, UserUpdateRequest request);
     List<UserResponse> getUsers();
     Optional<User> createOAuth2(UserOAuth2RegisterRequest request);
 }

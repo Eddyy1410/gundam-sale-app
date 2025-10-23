@@ -16,7 +16,8 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1004, "User not existed!", HttpStatus.NOT_FOUND),
     USER_EXISTED(1005, "Email already existed!", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(1006, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1007, "You do not have permission to access this resource!", HttpStatus.FORBIDDEN)
+    UNAUTHORIZED(1007, "You do not have permission to access this resource!", HttpStatus.FORBIDDEN),
+    CONVERSATION_ACCESS_DENIED(1008, "You are not authorized to send messages in this conversation!", HttpStatus.FORBIDDEN)
     ;
 
     int code;

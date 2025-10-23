@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.configuration;
+package com.huyntd.superapp.gundam_shop.configuration.component;
 
 import com.huyntd.superapp.gundam_shop.dto.request.IntrospectRequest;
 import com.huyntd.superapp.gundam_shop.exception.AppException;

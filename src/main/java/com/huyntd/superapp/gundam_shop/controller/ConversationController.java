@@ -16,12 +16,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/conversations")
 public class ConversationController {
 
     ConversationService conversationService;
 
-    @GetMapping("/{userId}/conversations")
+    @GetMapping("/{userId}/list")
     ApiResponse<List<ConversationResponse>> getConversationList(@PathVariable("userId") int staffId) {
         return ApiResponse.<List<ConversationResponse>>builder()
                 .result(conversationService.findConversationListForStaff(staffId))

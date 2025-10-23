@@ -76,13 +76,13 @@ public class UserServiceImpl implements UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public UserResponse getUser(String userId) {
+    public UserResponse getUser(int userId) {
         return userMapper.toUserResponse(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     @Override
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+    public UserResponse updateUser(int userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);

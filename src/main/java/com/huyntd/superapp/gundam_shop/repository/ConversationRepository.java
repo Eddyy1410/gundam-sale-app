@@ -23,4 +23,9 @@ public interface ConversationRepository extends JpaRepository<Conversation, Inte
             "AND m.sentAt = (SELECT MAX(m2.sentAt) FROM Message m2 WHERE m2.conversation.id = c.id) " +
             "ORDER BY m.sentAt DESC") // Sắp xếp để cuộc hội thoại có tin nhắn mới nhất lên đầu
     List<ConversationResponse> findConversationListForStaff(@Param("staffId") int staffId);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM Conversation c " +
+            "WHERE c.id = :conversationId AND (c.customer.id = :userId OR c.staff.id = :userId)")
+    boolean isUserMemberOfConversation(@Param("conversationId") int conversationId, @Param("userId") int userId);
 }

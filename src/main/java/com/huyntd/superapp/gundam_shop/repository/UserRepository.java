@@ -18,10 +18,10 @@ import java.util.Optional;
 // List<T> findAll(Sort sort) .... List<User> sortedUsers = userRepository.findAll(Sort.by(Sort.Direction.ASC, "username"));
 // Page<T> findAll(Pageable pageable)
 
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT new com.huyntd.superapp.gundam_shop.dto.response.UserResponse(u.id, u.email, u.fullName, u.phone, u.createdAt) FROM User u")
+    @Query("SELECT new com.huyntd.superapp.gundam_shop.dto.response.UserResponse(u.id, u.email, u.fullName, u.phone, u.role, u.createdAt) FROM User u")
     List<UserResponse> findAllUsersResponse();
 }

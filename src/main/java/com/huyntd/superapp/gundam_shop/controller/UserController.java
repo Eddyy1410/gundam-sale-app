@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getUser(@PathVariable String userId) {
+    ApiResponse<UserResponse> getUser(@PathVariable int userId) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getUser(userId))
                 .build();
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUser(@PathVariable int userId, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();
