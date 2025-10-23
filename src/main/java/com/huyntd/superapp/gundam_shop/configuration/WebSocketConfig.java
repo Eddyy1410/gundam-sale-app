@@ -4,6 +4,7 @@ import com.huyntd.superapp.gundam_shop.configuration.component.WebsocketAuthInte
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -15,6 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     final WebsocketAuthInterceptor stompAuthInterceptor;
@@ -49,6 +51,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         // Đăng ký Interceptor để xác thực JWT khi client CONNECT
+        log.info("✅ WebSocket inbound channel configured!");
         registration.interceptors(stompAuthInterceptor);
     }
 

@@ -9,15 +9,18 @@ import com.huyntd.superapp.gundam_shop.service.message.MessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Controller
+@Slf4j
 public class ChatController {
 
     MessageService messageService;
@@ -33,15 +36,18 @@ public class ChatController {
             MessageRequest request,
             @AuthenticationPrincipal CustomUserDetails principal) {
 
+        log.info(">>> handleChatMessage CALLED, principal = {}", principal);
         int senderId = principal.getId();
 
-        Message savedMessage = messageService.save(request, request.getConversationId(), senderId);
+        Message savedMessage = messageService.save(request, senderId);
 
         MessageResponse response = messageMapper.toMessageResponse(savedMessage);
 
-        String conversationTopic = "/topic/conversation/" + request.getConversationId();
+        String conversationTopic = "/topic/conversation/" + savedMessage.getConversation().getId();
         messagingTemplate.convertAndSend(conversationTopic, response);
 
     }
+
+
 
 }

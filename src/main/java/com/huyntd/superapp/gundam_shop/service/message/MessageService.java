@@ -5,5 +5,5 @@ import com.huyntd.superapp.gundam_shop.model.Conversation;
 import com.huyntd.superapp.gundam_shop.model.Message;
 
 public interface MessageService {
-    Message save(MessageRequest request, int conversationId, int senderId);
+    Message save(MessageRequest request, int senderId);
 }
