@@ -1,5 +1,6 @@
 package com.huyntd.superapp.gundam_shop.mapper;
 
+import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
@@ -12,6 +13,9 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
     @Mapping(source = "password", target = "passwordHash")
     User toUser(UserRegisterRequest userRegisterRequest);
+
+    @Mapping(source = "password", target = "passwordHash")
+    User toUser(UserCreateRequest userCreateRequest);
 
     UserResponse toUserResponse(User user);
 

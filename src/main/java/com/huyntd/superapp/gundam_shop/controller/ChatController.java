@@ -1,6 +1,6 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
-import com.huyntd.superapp.gundam_shop.configuration.CustomUserDetails;
+import com.huyntd.superapp.gundam_shop.configuration.util.CustomUserDetails;
 import com.huyntd.superapp.gundam_shop.dto.request.MessageRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.MessageResponse;
 import com.huyntd.superapp.gundam_shop.mapper.MessageMapper;
@@ -15,7 +15,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

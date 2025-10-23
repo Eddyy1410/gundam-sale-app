@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.configuration;
+package com.huyntd.superapp.gundam_shop.configuration.util;
 
 import com.huyntd.superapp.gundam_shop.model.User;
 import lombok.AllArgsConstructor;

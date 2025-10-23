@@ -1,7 +1,7 @@
 package com.huyntd.superapp.gundam_shop.service.authentication.impl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.huyntd.superapp.gundam_shop.configuration.CustomUserDetails;
+import com.huyntd.superapp.gundam_shop.configuration.util.CustomUserDetails;
 import com.huyntd.superapp.gundam_shop.configuration.component.GoogleTokenVerifier;
 import com.huyntd.superapp.gundam_shop.dto.request.*;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;

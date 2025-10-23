@@ -1,6 +1,7 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
+import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
@@ -25,19 +26,19 @@ public class UserController {
 
     UserService userService;
 
-    @PostMapping("/")
-    ApiResponse<UserResponse> addUser(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+    @PostMapping("/register")
+    ApiResponse<UserResponse> addCustomer(@RequestBody @Valid UserRegisterRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.create(userRegisterRequest))
+                .result(userService.createCustomer(request))
                 .message("User registered successfully!")
                 .build();
     }
 
-    @PostMapping("/staff")
-    ApiResponse<UserResponse> addStaff(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+    @PostMapping("/create")
+    ApiResponse<UserResponse> addUser(@RequestBody @Valid UserCreateRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createStaff(userRegisterRequest))
-                .message("Staff registered successfully!")
+                .result(userService.create(request))
+                .message("User created successfully!")
                 .build();
     }
 

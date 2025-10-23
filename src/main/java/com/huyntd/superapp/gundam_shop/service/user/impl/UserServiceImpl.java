@@ -1,5 +1,6 @@
 package com.huyntd.superapp.gundam_shop.service.user.impl;
 
+import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserOAuth2RegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public UserResponse create(UserRegisterRequest request) {
+    public UserResponse createCustomer(UserRegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -51,14 +52,13 @@ public class UserServiceImpl implements UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public UserResponse createStaff(UserRegisterRequest request) {
+    public UserResponse create(UserCreateRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User newUser = userMapper.toUser(request);
-        newUser.setRole(UserRole.STAFF);
 
         return userMapper.toUserResponse(userRepository.save(newUser));
     }
