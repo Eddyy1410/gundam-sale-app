@@ -10,10 +10,12 @@ import com.huyntd.superapp.gundam_shop.mapper.OrderMapper;
 import com.huyntd.superapp.gundam_shop.model.Cart;
 import com.huyntd.superapp.gundam_shop.model.Order;
 import com.huyntd.superapp.gundam_shop.model.OrderItem;
+import com.huyntd.superapp.gundam_shop.model.Product;
 import com.huyntd.superapp.gundam_shop.model.enums.OrderStatus;
 import com.huyntd.superapp.gundam_shop.model.enums.PaymentMethod;
 import com.huyntd.superapp.gundam_shop.repository.OrderItemRepository;
 import com.huyntd.superapp.gundam_shop.repository.OrderRepository;
+import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
 import com.huyntd.superapp.gundam_shop.service.category.CategoryService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
 import lombok.AccessLevel;
@@ -33,6 +35,7 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    ProductRepository productRepository;
     OrderRepository orderRepository;
     OrderItemRepository orderItemRepository;
 
@@ -61,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> orderPage = orderRepository.findAllByUserId(userId, pageable)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        Page<OrderResponse> order =  orderPage.map(orderMapper::toOrderResponse);
+        Page<OrderResponse> order = orderPage.map(orderMapper::toOrderResponse);
 
         return orderPage.map(orderMapper::toOrderResponse);
     }
@@ -75,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(orderMapper::toOrderItemResponse)
                 .toList();
 
-        var orderResponse =  orderMapper.toOrderResponse(order);
+        var orderResponse = orderMapper.toOrderResponse(order);
         orderResponse.setOrderItems(items);
 
         return orderResponse;
@@ -97,12 +100,29 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentMethod(paymentMethod);
         var orderResponse = orderRepository.save(order);
 
-        for(var item: request.getOrderItems()) {
+        List<Product> productsToUpdate = new ArrayList<>();
+        List<OrderItem> orderItemsToSave = new ArrayList<>();
+
+        for (var item : request.getOrderItems()) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found with id: " + item.getProductId()));
+
+            int remaining = product.getQuantity() - item.getQuantity();
+            if (remaining < 0) {
+                throw new RuntimeException("Insufficient stock for product id: " + item.getProductId());
+            }
+
+            // Chỉ cập nhật vào bộ nhớ tạm, chưa lưu
+            product.setQuantity(remaining);
+            productsToUpdate.add(product);
+
             var orderItem = orderMapper.toOrderItem(item);
             orderItem.setOrder(order);
-
-            orderItemRepository.save(orderItem);
+            orderItemsToSave.add(orderItem);
         }
+
+        productRepository.saveAll(productsToUpdate);
+        orderItemRepository.saveAll(orderItemsToSave);
 
         return orderMapper.toOrderResponse(order);
     }
@@ -112,7 +132,27 @@ public class OrderServiceImpl implements OrderService {
         var order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
 
+        OrderStatus orderStatus;
+        try {
+            orderStatus = OrderStatus.valueOf(request.getOrderStatus().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new AppException(ErrorCode.INVALID_KEY);
+        }
+
+        //Cập nhật số lượng
+        var orderItemList = orderItemRepository.findAllByOrderId(order.getId());
+        for (var item : orderItemList) {
+            Product product = productRepository.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new RuntimeException("Order not found with id: " + item.getProduct().getId()));
+            if (orderStatus.equals(OrderStatus.CANCELLED) || orderStatus.equals(OrderStatus.RETURNED)) {
+                product.setQuantity(product.getQuantity() + item.getQuantity());
+                productRepository.save(product);
+            }
+        }
+
+        //Cập nhật Order
         orderMapper.updateOrderFromRequest(request, order);
+        order.setStatus(orderStatus);
         orderRepository.save(order);
         return orderMapper.toOrderResponse(order);
     }
