@@ -13,12 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "[conservation]")
+@Table(name = "[conversation]")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Conversation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 

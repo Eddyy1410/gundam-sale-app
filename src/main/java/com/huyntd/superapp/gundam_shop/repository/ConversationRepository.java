@@ -2,11 +2,13 @@ package com.huyntd.superapp.gundam_shop.repository;
 
 import com.huyntd.superapp.gundam_shop.dto.response.ConversationResponse;
 import com.huyntd.superapp.gundam_shop.model.Conversation;
+import com.huyntd.superapp.gundam_shop.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ConversationRepository extends JpaRepository<Conversation, Integer> {
     @Query("SELECT new com.huyntd.superapp.gundam_shop.dto.response.ConversationResponse(" +
@@ -28,4 +30,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Inte
             "FROM Conversation c " +
             "WHERE c.id = :conversationId AND (c.customer.id = :userId OR c.staff.id = :userId)")
     boolean isUserMemberOfConversation(@Param("conversationId") int conversationId, @Param("userId") int userId);
+
+    @Query("SELECT c.id FROM Conversation c WHERE c.customer.id = :customerId ORDER BY c.id DESC")
+    Optional<Integer> findConversationIdByCustomerId(@Param("customerId") int customerId);
 }

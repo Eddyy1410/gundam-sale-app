@@ -17,6 +17,6 @@ public class ConversationResponse {
     private Date latestMessageSentAt;
     private int customerId;
     // 2 trường dưới này CỰC KỲ HỮU ÍCH
-//    private String customerAvatarUrl; // URL ảnh đại diện của khách hàng
-//    private int unreadMessageCount; // Số tin nhắn chưa đọc
+    //private String customerAvatarUrl; // URL ảnh đại diện của khách hàng
+    //private int unreadMessageCount; // Số tin nhắn chưa đọc
 }

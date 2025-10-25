@@ -30,9 +30,9 @@ public class WebsocketAuthInterceptor implements ChannelInterceptor {
         log.info("🧩 preSend triggered!");
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (accessor == null) {
-            System.out.println("⚠️ Không phải STOMP frame");
+            log.info("⚠️ Không phải STOMP frame");
         } else {
-            System.out.println("🧩 STOMP command: " + accessor.getCommand());
+            log.info("🧩 STOMP command: " + accessor.getCommand());
         }
 
         // Chỉ xử lý khi client gửi frame CONNECT (kết nối ban đầu)
@@ -74,7 +74,7 @@ public class WebsocketAuthInterceptor implements ChannelInterceptor {
 
     @Override
     public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
-        System.out.println("📦 postSend triggered!");
+        log.info("📦 postSend triggered!");
     }
 
 }
