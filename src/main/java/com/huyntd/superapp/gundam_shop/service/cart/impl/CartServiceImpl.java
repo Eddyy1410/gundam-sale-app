@@ -38,7 +38,7 @@ public class CartServiceImpl implements CartService {
 
         if (cart == null) {
             Cart newCart = new Cart();
-            var user = userRepository.findById(String.valueOf(userId))
+            var user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             newCart.setUser(user);
