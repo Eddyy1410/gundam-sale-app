@@ -21,6 +21,7 @@ import com.huyntd.superapp.gundam_shop.service.order.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
@@ -42,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
     OrderMapper orderMapper;
 
     @Override
-    public Page<OrderResponse> getOrdersByStatus(Pageable pageable, String status) {
+    public Page<OrderResponse> getOrdersByStatus(Pageable pageable, String status,  int userId) {
         OrderStatus orderStatus;
 
         try {
@@ -50,9 +52,15 @@ public class OrderServiceImpl implements OrderService {
         } catch (IllegalArgumentException e) {
             throw new AppException(ErrorCode.INVALID_KEY);
         }
+        Page<Order> orderPage;
 
-        Page<Order> orderPage = orderRepository.findAllByStatus(orderStatus, pageable)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        if(userId == 0){
+            orderPage = orderRepository.findAllByStatus(orderStatus, pageable)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+        } else {
+            orderPage = orderRepository.findAllByStatusAndUserId(orderStatus, userId, pageable)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+        }
 
         // Dùng map() của Page để convert sang Page<OrderResponse>
         return orderPage.map(orderMapper::toOrderResponse);
@@ -77,6 +85,12 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemResponse> items = order.getOrderItems().stream()
                 .map(orderMapper::toOrderItemResponse)
                 .toList();
+
+        for(OrderItemResponse item : items){
+            var product = productRepository.findById(item.getProductId());
+            item.setProductName(product.get().getName());
+            item.setProductImage(product.get().getProductImages().get(0).getImageUrl());
+        }
 
         var orderResponse = orderMapper.toOrderResponse(order);
         orderResponse.setOrderItems(items);
