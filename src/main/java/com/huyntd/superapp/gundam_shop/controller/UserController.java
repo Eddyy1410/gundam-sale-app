@@ -1,6 +1,7 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
+import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
@@ -25,24 +26,24 @@ public class UserController {
 
     UserService userService;
 
-    @PostMapping("/")
-    ApiResponse<UserResponse> addUser(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+    @PostMapping("/register")
+    ApiResponse<UserResponse> addCustomer(@RequestBody @Valid UserRegisterRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.create(userRegisterRequest))
+                .result(userService.createCustomer(request))
                 .message("User registered successfully!")
                 .build();
     }
 
-    @PostMapping("/staff")
-    ApiResponse<UserResponse> addStaff(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+    @PostMapping("/create")
+    ApiResponse<UserResponse> addUser(@RequestBody @Valid UserCreateRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createStaff(userRegisterRequest))
-                .message("Staff registered successfully!")
+                .result(userService.create(request))
+                .message("User created successfully!")
                 .build();
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getUser(@PathVariable String userId) {
+    ApiResponse<UserResponse> getUser(@PathVariable int userId) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getUser(userId))
                 .build();
@@ -68,7 +69,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUser(@PathVariable int userId, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();

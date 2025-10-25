@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.configuration;
+package com.huyntd.superapp.gundam_shop.configuration.component;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;

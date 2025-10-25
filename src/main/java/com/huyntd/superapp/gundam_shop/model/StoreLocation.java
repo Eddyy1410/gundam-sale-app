@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class StoreLocation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 

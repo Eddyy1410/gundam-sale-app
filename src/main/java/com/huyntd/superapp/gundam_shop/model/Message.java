@@ -20,7 +20,7 @@ import java.util.Date;
 public class Message {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 
@@ -32,7 +32,7 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     User sender;
 
-    @Column(name = "content", nullable = false, length = 200)
+    @Column(name = "content", nullable = false, length = 200, columnDefinition = "NVARCHAR(200)")
     String content;
 
     @CreatedDate

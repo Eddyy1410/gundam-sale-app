@@ -1,27 +1,19 @@
 package com.huyntd.superapp.gundam_shop.configuration;
 
-import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
+import com.huyntd.superapp.gundam_shop.configuration.component.CustomeJwtDecoder;
+import com.huyntd.superapp.gundam_shop.configuration.util.JwtAuthenticationEntryPoint;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
 
     static final String[] PUBLIC_POST_ENDPOINTS = {
-            "/user/",
+            "/user/register",
             "/auth/log-in", "/auth/introspect", "auth/google-android", "auth/logout",
             "/api/products"
     };
@@ -54,6 +46,9 @@ public class SecurityConfig {
                         requests.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                                 .requestMatchers("/api/products/**").permitAll()
+                                .requestMatchers("api/conversations/chat/test").permitAll()
+                                // Nếu bạn dùng /ws-native
+                                .requestMatchers("/ws-native/**").permitAll()
                                 .anyRequest().authenticated())
                 // .oauth2Login chỉ dành cho stateful API (cookie, session)
                 //      |--- LƯU Ý: khái niệm statefull/ stateless mô tả cách SERVER xử lý trạng thái (state) của các phiên làm việc, không phải client
