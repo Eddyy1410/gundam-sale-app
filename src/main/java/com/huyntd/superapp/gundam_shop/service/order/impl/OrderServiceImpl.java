@@ -63,7 +63,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // Dùng map() của Page để convert sang Page<OrderResponse>
-        return orderPage.map(orderMapper::toOrderResponse);
+        var page = orderPage.map(orderMapper::toOrderResponse);
+        for(var item : page.getContent()) {
+            var orderItemList = get(item.getId());
+            item.setOrderItems(orderItemList.getOrderItems());
+        }
+        return page;
     }
 
     @Override
@@ -74,7 +79,12 @@ public class OrderServiceImpl implements OrderService {
 
         Page<OrderResponse> order = orderPage.map(orderMapper::toOrderResponse);
 
-        return orderPage.map(orderMapper::toOrderResponse);
+        var page = orderPage.map(orderMapper::toOrderResponse);
+        for(var item : page.getContent()) {
+            var orderItemList = get(item.getId());
+            item.setOrderItems(orderItemList.getOrderItems());
+        }
+        return page;
     }
 
     @Override
