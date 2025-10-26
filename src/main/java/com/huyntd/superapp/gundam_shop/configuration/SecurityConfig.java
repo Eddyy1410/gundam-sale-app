@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                                 .requestMatchers("/api/products/**").permitAll()
                                 .requestMatchers("api/conversations/chat/test").permitAll()
+                                .requestMatchers("api/notifications/**").permitAll()
                                 // Nếu bạn dùng /ws-native
                                 .requestMatchers("/ws-native/**").permitAll()
                                 .anyRequest().authenticated())

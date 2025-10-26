@@ -37,4 +37,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     ORDER BY COUNT(c) ASC
     """)
     List<User> findUsersOrderByConversationCountAsc();
+
+
 }

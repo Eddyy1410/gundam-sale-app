@@ -74,6 +74,15 @@ public class UserServiceImpl implements UserService {
                         .build())));
     }
 
+    @Override
+    public void saveFcmToken(String fcmToken) {
+        List<User> users = userRepository.findByRole("STAFF");
+        for(User user : users) {
+            user.setFcmToken(fcmToken);
+            userRepository.save(user);
+        }
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UserResponse getUser(int userId) {

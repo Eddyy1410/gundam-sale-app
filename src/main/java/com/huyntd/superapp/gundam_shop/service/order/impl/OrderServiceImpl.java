@@ -4,6 +4,7 @@ import com.huyntd.superapp.gundam_shop.dto.request.CreateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderItemResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
+import com.huyntd.superapp.gundam_shop.event.OrderCreatedEvent;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
 import com.huyntd.superapp.gundam_shop.mapper.OrderMapper;
@@ -16,9 +17,11 @@ import com.huyntd.superapp.gundam_shop.repository.OrderItemRepository;
 import com.huyntd.superapp.gundam_shop.repository.OrderRepository;
 import com.huyntd.superapp.gundam_shop.service.category.CategoryService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     OrderRepository orderRepository;
     OrderItemRepository orderItemRepository;
-
+    ApplicationEventPublisher eventPublisher;
     OrderMapper orderMapper;
 
     @Override
@@ -82,6 +85,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
         var order = orderMapper.toOrder(request);
         order.setOrderDate(LocalDateTime.now());
@@ -103,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
 
             orderItemRepository.save(orderItem);
         }
-
+        eventPublisher.publishEvent(new OrderCreatedEvent(order));
         return orderMapper.toOrderResponse(order);
     }
 
