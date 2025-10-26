@@ -1,10 +1,5 @@
 package com.huyntd.superapp.gundam_shop.configuration;
 
-import com.huyntd.superapp.gundam_shop.configuration.component.CustomeJwtDecoder;
-import com.huyntd.superapp.gundam_shop.configuration.util.JwtAuthenticationEntryPoint;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,6 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.huyntd.superapp.gundam_shop.configuration.component.CustomeJwtDecoder;
+import com.huyntd.superapp.gundam_shop.configuration.util.JwtAuthenticationEntryPoint;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +27,9 @@ public class SecurityConfig {
     static final String[] PUBLIC_POST_ENDPOINTS = {
             "/user/register",
             "/auth/log-in", "/auth/introspect", "auth/google-android", "auth/logout",
-            "/api/products"
+            "/api/products",
+            "/auth/forgot-password",
+            "/auth/reset-password"
     };
 
     static final String[] SWAGGER_ENDPOINTS = {

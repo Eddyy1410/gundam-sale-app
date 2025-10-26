@@ -107,6 +107,11 @@
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
             <version>${spring-boot-starter-oauth2-client.version}</version>
         </dependency>
+            <!-- Mail support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
         <dependency>
             <groupId>com.google.api-client</groupId>
