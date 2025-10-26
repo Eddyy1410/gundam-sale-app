@@ -13,7 +13,6 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageResponse {
     int id;
-    int conversationId;
     int senderId; // ID của user gửi (đã xác thực)
     String senderName;
     String content;

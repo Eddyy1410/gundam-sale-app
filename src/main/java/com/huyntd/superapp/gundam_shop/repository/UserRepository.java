@@ -38,5 +38,19 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     """)
     List<User> findUsersOrderByConversationCountAsc();
 
-
+    @Query(value = """
+    SELECT TOP 1 staffId
+    FROM (
+        SELECT 
+            u.id AS staffId, 
+            COALESCE(COUNT(c.id), 0) AS conversationCount
+        FROM [user] u
+        LEFT JOIN Conversation c
+            ON u.id = c.staff_id AND c.status IN ('NEW', 'OPEN')
+        WHERE u.role = 'STAFF'
+        GROUP BY u.id
+    ) AS StaffCounts
+    ORDER BY conversationCount ASC, staffId ASC
+    """, nativeQuery = true)
+    Optional<Integer> findLeastBusyStaffId();
 }

@@ -13,5 +13,7 @@ public class OrderItemResponse {
     int id;
     int orderId;
     int productId;
+    String productImage;
+    String productName;
     int quantity;
 }

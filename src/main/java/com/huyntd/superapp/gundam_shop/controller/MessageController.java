@@ -1,10 +1,7 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
-import com.huyntd.superapp.gundam_shop.dto.response.ConversationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.MessageResponse;
-import com.huyntd.superapp.gundam_shop.model.Conversation;
-import com.huyntd.superapp.gundam_shop.service.conversation.ConversationService;
 import com.huyntd.superapp.gundam_shop.service.message.MessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +16,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
-@RequestMapping("/api/conversations")
-public class ConversationController {
+@RequestMapping("/api/messages")
+public class MessageController {
 
-    ConversationService conversationService;
+    MessageService messageService;
 
-    @GetMapping("/list/{staffId}")
-    ApiResponse<List<ConversationResponse>> getConversationList(@PathVariable int staffId) {
-        return ApiResponse.<List<ConversationResponse>>builder()
-                .result(conversationService.findConversationListForStaff(staffId))
+    @GetMapping("/{customerId}")
+    ApiResponse<List<MessageResponse>> getMessagesByCustomerId(@PathVariable int customerId) {
+        return ApiResponse.<List<MessageResponse>>builder()
+                .result(messageService.getMessagesByCustomerId(customerId))
                 .build();
     }
-
 }
