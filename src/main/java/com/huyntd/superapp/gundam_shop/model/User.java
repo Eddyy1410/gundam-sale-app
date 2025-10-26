@@ -52,6 +52,9 @@ public class User {
     @Column(name = "updated_at")
     Date updatedAt;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Cart cart;
 

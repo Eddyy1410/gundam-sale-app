@@ -18,4 +18,5 @@ public interface UserService {
     UserResponse updateUser(int userId, UserUpdateRequest request);
     List<UserResponse> getUsers();
     Optional<User> createOAuth2(UserOAuth2RegisterRequest request);
+    void saveFcmToken(String fcmToken);
 }

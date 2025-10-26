@@ -45,7 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Sử dụng SockJS để hỗ trợ kết nối qua các trình duyệt cũ hơn (web)
         registry.addEndpoint("/ws-native") // HANDSHAKE endpoint
                 .setAllowedOriginPatterns("*"); // Cho phép tất cả các nguồn (hoặc định nghĩa cụ thể)
-                //.withSockJS();
+                //.withSockJS();us
     }
 
     @Override
