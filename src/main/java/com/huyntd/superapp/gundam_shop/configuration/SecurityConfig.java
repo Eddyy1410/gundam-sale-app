@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                                 .requestMatchers("/api/products/**").permitAll()
                                 .requestMatchers("api/conversations/chat/test").permitAll()
-                                // Nếu bạn dùng /ws-native
+                                // Nếu bạn dùng /ws-native (mobile)
                                 .requestMatchers("/ws-native/**").permitAll()
                                 .anyRequest().authenticated())
                 // .oauth2Login chỉ dành cho stateful API (cookie, session)
