@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
+import com.huyntd.superapp.gundam_shop.dto.request.FcmTokenRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserProfileUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
@@ -71,7 +72,7 @@ public class UserController {
                 .build();
     }
 
-     @GetMapping("/")
+    @GetMapping()
     ApiResponse<List<UserResponse>> getAllUsers() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -88,6 +89,16 @@ public class UserController {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();
+    }
+
+    @PostMapping("/fcm-token")
+    public ApiResponse<?> updateFcmToken(@RequestBody FcmTokenRequest request) {
+       userService.saveFcmToken(request.getFcmToken());
+
+        return
+                ApiResponse.builder()
+                        .message("FCM token updated successfully")
+                        .build();
     }
 
 }

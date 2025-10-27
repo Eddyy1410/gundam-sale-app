@@ -4,6 +4,7 @@ import com.huyntd.superapp.gundam_shop.dto.request.CreateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderItemResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
+import com.huyntd.superapp.gundam_shop.event.OrderCreatedEvent;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
 import com.huyntd.superapp.gundam_shop.mapper.OrderMapper;
@@ -18,10 +19,12 @@ import com.huyntd.superapp.gundam_shop.repository.OrderRepository;
 import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
 import com.huyntd.superapp.gundam_shop.service.category.CategoryService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     ProductRepository productRepository;
     OrderRepository orderRepository;
     OrderItemRepository orderItemRepository;
-
+    ApplicationEventPublisher eventPublisher;
     OrderMapper orderMapper;
 
     @Override
@@ -148,6 +151,7 @@ public class OrderServiceImpl implements OrderService {
         productRepository.saveAll(productsToUpdate);
         orderItemRepository.saveAll(orderItemsToSave);
 
+        eventPublisher.publishEvent(new OrderCreatedEvent(order));
         return orderMapper.toOrderResponse(order);
     }
 
@@ -176,7 +180,6 @@ public class OrderServiceImpl implements OrderService {
 
         //Cập nhật Order
         orderMapper.updateOrderFromRequest(request, order);
-        order.setStatus(orderStatus);
         orderRepository.save(order);
         return orderMapper.toOrderResponse(order);
     }
