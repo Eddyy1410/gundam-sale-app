@@ -29,8 +29,11 @@ public class SecurityConfig {
             "/auth/log-in", "/auth/introspect", "auth/google-android", "auth/logout",
             "/api/products",
             "/auth/forgot-password",
-            "/auth/reset-password"
+            "/auth/reset-password",
+
     };
+
+    static final String[] PUBLIC_GET_ENDPOINTS = {"/payment/vnpay-return", "/payment/momo-return"};
 
     static final String[] SWAGGER_ENDPOINTS = {
             "/v3/api-docs/**",
@@ -48,6 +51,7 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(requests ->
                         requests.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                                 .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                                 .requestMatchers("/api/products/**").permitAll()
                                 .requestMatchers("api/conversations/chat/test").permitAll()

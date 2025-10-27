@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.config;
+package com.huyntd.superapp.gundam_shop.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
