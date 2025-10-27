@@ -69,52 +69,6 @@ public class VNPAYService {
         }
     }
 
-//    private String createRequestUrl(String baseUrl, String vnp_HashSecret, Map<String, String> params) throws Exception {
-//        StringBuilder data = new StringBuilder();
-//        StringBuilder query = new StringBuilder();
-//
-//        for (Map.Entry<String, String> entry : params.entrySet()) {
-//            String key = entry.getKey();
-//            String value = entry.getValue();
-//
-//            if (value != null && !value.isEmpty()) {
-//                // ✅ Encode key và value
-//                String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8.toString());
-//                String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
-//
-//                data.append(encodedKey).append("=").append(encodedValue).append("&");
-//                query.append(encodedKey).append("=").append(encodedValue).append("&");
-//            }
-//        }
-//
-//        // ✅ Xóa dấu '&' cuối cùng
-//        if (data.length() > 0) {
-//            data.deleteCharAt(data.length() - 1);
-//            query.deleteCharAt(query.length() - 1);
-//        }
-//
-//        // ✅ Tạo chữ ký HMAC SHA512
-//        String vnp_SecureHash = hmacSHA512(vnp_HashSecret, data.toString());
-//
-//        // ✅ Ghép URL cuối cùng
-//        return baseUrl + "?" + query + "&vnp_SecureHash=" + vnp_SecureHash;
-//    }
-//
-//
-//    // --- Utility method to sign HMAC SHA512 ---
-//    private String hmacSHA512(String key, String data) throws Exception {
-//        Mac hmac = Mac.getInstance("HmacSHA512");
-//        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
-//        hmac.init(secretKey);
-//        byte[] bytes = hmac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-//
-//        StringBuilder hash = new StringBuilder();
-//        for (byte b : bytes) {
-//            hash.append(String.format("%02x", b));
-//        }
-//        return hash.toString();
-//    }
-
     public String createRequestUrl(String baseUrl, String vnp_HashSecret, Map<String, String> params) throws Exception {
         StringBuilder query = new StringBuilder();
         StringBuilder hashData = new StringBuilder();

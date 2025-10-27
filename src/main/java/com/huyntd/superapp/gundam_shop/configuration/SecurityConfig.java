@@ -33,7 +33,9 @@ public class SecurityConfig {
 
     };
 
-    static final String[] PUBLIC_GET_ENDPOINTS = {"/payment/vnpay-return", "/payment/momo-return"};
+    static final String[] PUBLIC_GET_ENDPOINTS = {
+            "/payment/vnpay-return", "/payment/momo-return"
+    };
 
     static final String[] SWAGGER_ENDPOINTS = {
             "/v3/api-docs/**",
