@@ -22,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -115,5 +116,13 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateOrderFromRequest(request, order);
         orderRepository.save(order);
         return orderMapper.toOrderResponse(order);
+    }
+
+    @Override
+    public Page<OrderResponse> getOrdersToday(int page, int size, String sortBy, String sortDir, String status) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDir, sortBy));
+        Page<Order> orderPage = orderRepository.findAllByStatus(OrderStatus.valueOf(status.toUpperCase()), pageable)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        return  orderPage.map(orderMapper::toOrderResponse);
     }
 }

@@ -12,4 +12,5 @@ public interface OrderService {
     OrderResponse get (int orderId);
     OrderResponse createOrder (CreateOrderRequest request);
     OrderResponse updateOrder (int id, UpdateOrderRequest request);
+    Page<OrderResponse> getOrdersToday (int page, int size, String sortBy, String sortDir, String status);
 }

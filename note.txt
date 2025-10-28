@@ -1,0 +1,2 @@
+fix lại chat api (khi gửi tin nhắn thì tạo luôn conversation nếu chưa có)
+chat nên dùng Automatic Assignment

@@ -72,4 +72,19 @@ public class OrderController {
                 .build());
     }
 
+
+    @GetMapping
+    public ApiResponse<Page<OrderResponse>> getOrdersToday(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            @RequestParam(value = "status", required = false) String status
+    ){
+        var result = orderService.getOrdersToday(page, size, sortBy, sortDir, status);
+        return ApiResponse.<Page<OrderResponse>>builder()
+                .result(result)
+                .build();
+    }
+
 }
