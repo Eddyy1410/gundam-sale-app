@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class ProductImage {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 

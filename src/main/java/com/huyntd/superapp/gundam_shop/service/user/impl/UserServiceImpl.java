@@ -1,5 +1,15 @@
 package com.huyntd.superapp.gundam_shop.service.user.impl;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserOAuth2RegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
@@ -11,24 +21,17 @@ import com.huyntd.superapp.gundam_shop.model.User;
 import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
 import com.huyntd.superapp.gundam_shop.repository.UserRepository;
 import com.huyntd.superapp.gundam_shop.service.user.UserService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
-public class UserServiceImplement implements UserService {
+public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
 
@@ -37,7 +40,7 @@ public class UserServiceImplement implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public UserResponse create(UserRegisterRequest request) {
+    public UserResponse createCustomer(UserRegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -51,14 +54,13 @@ public class UserServiceImplement implements UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public UserResponse createStaff(UserRegisterRequest request) {
+    public UserResponse create(UserCreateRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User newUser = userMapper.toUser(request);
-        newUser.setRole(UserRole.STAFF);
 
         return userMapper.toUserResponse(userRepository.save(newUser));
     }
@@ -74,15 +76,24 @@ public class UserServiceImplement implements UserService {
                         .build())));
     }
 
+    @Override
+    public void saveFcmToken(String fcmToken) {
+        List<User> users = userRepository.findByRole("STAFF");
+        for(User user : users) {
+            user.setFcmToken(fcmToken);
+            userRepository.save(user);
+        }
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public UserResponse getUser(String userId) {
+    public UserResponse getUser(int userId) {
         return userMapper.toUserResponse(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     @Override
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+    public UserResponse updateUser(int userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -112,6 +123,35 @@ public class UserServiceImplement implements UserService {
                 () -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return userMapper.toUserResponse(user);
+    }
+
+    @Override
+    public UserResponse updateMyProfile(com.huyntd.superapp.gundam_shop.dto.request.UserProfileUpdateRequest request) {
+        var ctx = SecurityContextHolder.getContext();
+        String name = ctx.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (request.getFullName() != null) user.setFullName(request.getFullName());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public void changePassword(String currentPassword, String newPassword) {
+        var ctx = SecurityContextHolder.getContext();
+        String email = ctx.getAuthentication().getName();
+        if (email == null || email.isBlank()) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
 }

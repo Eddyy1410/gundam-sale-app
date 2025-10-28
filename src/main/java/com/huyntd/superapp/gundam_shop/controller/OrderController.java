@@ -23,10 +23,10 @@ public class OrderController {
 
     OrderService orderService;
 
-    @GetMapping()
-    public ResponseEntity<ApiResponse<Page<OrderResponse>>> getOrdersStatus(@RequestParam String status, Pageable pageable){
-        var result = orderService.getOrdersByStatus(pageable, status);
-
+    @GetMapping("/status/user/{id}")
+    public ResponseEntity<ApiResponse<Page<OrderResponse>>> getOrdersStatus(@PathVariable int id, @RequestParam String status, Pageable pageable){
+        var result = orderService.getOrdersByStatus(pageable, status, id);
+        //userId = 0 -> Lấy all list
         return ResponseEntity.ok(
                 ApiResponse.<Page<OrderResponse>>builder()
                         .result(result)

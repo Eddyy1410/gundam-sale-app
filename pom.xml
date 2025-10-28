@@ -40,11 +40,17 @@
         <spring-boot-starter-oauth2-resource-server.version>3.5.6</spring-boot-starter-oauth2-resource-server.version>
         <spring-boot-starter-oauth2-client.version>3.5.6</spring-boot-starter-oauth2-client.version>
         <google-api-client.version>2.8.1</google-api-client.version>
-        <spring-boot-devtools.version>3.5.6</spring-boot-devtools.version>
+<!--        <spring-boot-devtools.version>3.5.6</spring-boot-devtools.version>-->
         <spring-boot-starter-websocket.version>3.5.6</spring-boot-starter-websocket.version>
 
 	</properties>
 	<dependencies>
+
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.7.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -107,17 +113,16 @@
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
             <version>${spring-boot-starter-oauth2-client.version}</version>
         </dependency>
+            <!-- Mail support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
             <version>${google-api-client.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <version>${spring-boot-devtools.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
         <dependency>

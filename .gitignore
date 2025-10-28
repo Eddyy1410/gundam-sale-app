@@ -47,4 +47,6 @@ yarn-error.log*
 # Ignore any local application properties/yml files
 # Create application-local.properties.example to guide others
 *.properties
+
+note.txt
 gundam-firebase-adminsdk-go6gm-4c760396ec.json

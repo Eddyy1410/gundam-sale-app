@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateOrderRequest{
+    private String orderStatus;
     private BigDecimal totalPrice;
     private String paymentMethod;
     private String billingAddress;
-    private List<OrderItem> orderItems;
 }

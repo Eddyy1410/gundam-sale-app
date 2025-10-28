@@ -4,21 +4,27 @@ import com.huyntd.superapp.gundam_shop.dto.request.CreateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderItemResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
+import com.huyntd.superapp.gundam_shop.event.OrderCreatedEvent;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
 import com.huyntd.superapp.gundam_shop.mapper.OrderMapper;
 import com.huyntd.superapp.gundam_shop.model.Cart;
 import com.huyntd.superapp.gundam_shop.model.Order;
 import com.huyntd.superapp.gundam_shop.model.OrderItem;
+import com.huyntd.superapp.gundam_shop.model.Product;
 import com.huyntd.superapp.gundam_shop.model.enums.OrderStatus;
 import com.huyntd.superapp.gundam_shop.model.enums.PaymentMethod;
 import com.huyntd.superapp.gundam_shop.repository.OrderItemRepository;
 import com.huyntd.superapp.gundam_shop.repository.OrderRepository;
+import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
 import com.huyntd.superapp.gundam_shop.service.category.CategoryService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,18 +35,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    ProductRepository productRepository;
     OrderRepository orderRepository;
     OrderItemRepository orderItemRepository;
-
+    ApplicationEventPublisher eventPublisher;
     OrderMapper orderMapper;
 
     @Override
-    public Page<OrderResponse> getOrdersByStatus(Pageable pageable, String status) {
+    public Page<OrderResponse> getOrdersByStatus(Pageable pageable, String status,  int userId) {
         OrderStatus orderStatus;
 
         try {
@@ -48,12 +56,23 @@ public class OrderServiceImpl implements OrderService {
         } catch (IllegalArgumentException e) {
             throw new AppException(ErrorCode.INVALID_KEY);
         }
+        Page<Order> orderPage;
 
-        Page<Order> orderPage = orderRepository.findAllByStatus(orderStatus, pageable)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        if(userId == 0){
+            orderPage = orderRepository.findAllByStatus(orderStatus, pageable)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+        } else {
+            orderPage = orderRepository.findAllByStatusAndUserId(orderStatus, userId, pageable)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+        }
 
         // Dùng map() của Page để convert sang Page<OrderResponse>
-        return orderPage.map(orderMapper::toOrderResponse);
+        var page = orderPage.map(orderMapper::toOrderResponse);
+        for(var item : page.getContent()) {
+            var orderItemList = get(item.getId());
+            item.setOrderItems(orderItemList.getOrderItems());
+        }
+        return page;
     }
 
     @Override
@@ -62,9 +81,14 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> orderPage = orderRepository.findAllByUserId(userId, pageable)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        Page<OrderResponse> order =  orderPage.map(orderMapper::toOrderResponse);
+        Page<OrderResponse> order = orderPage.map(orderMapper::toOrderResponse);
 
-        return orderPage.map(orderMapper::toOrderResponse);
+        var page = orderPage.map(orderMapper::toOrderResponse);
+        for(var item : page.getContent()) {
+            var orderItemList = get(item.getId());
+            item.setOrderItems(orderItemList.getOrderItems());
+        }
+        return page;
     }
 
     @Override
@@ -76,7 +100,13 @@ public class OrderServiceImpl implements OrderService {
                 .map(orderMapper::toOrderItemResponse)
                 .toList();
 
-        var orderResponse =  orderMapper.toOrderResponse(order);
+        for(OrderItemResponse item : items){
+            var product = productRepository.findById(item.getProductId());
+            item.setProductName(product.get().getName());
+            item.setProductImage(product.get().getProductImages().get(0).getImageUrl());
+        }
+
+        var orderResponse = orderMapper.toOrderResponse(order);
         orderResponse.setOrderItems(items);
 
         return orderResponse;
@@ -98,13 +128,31 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentMethod(paymentMethod);
         var orderResponse = orderRepository.save(order);
 
-        for(var item: request.getOrderItems()) {
+        List<Product> productsToUpdate = new ArrayList<>();
+        List<OrderItem> orderItemsToSave = new ArrayList<>();
+
+        for (var item : request.getOrderItems()) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found with id: " + item.getProductId()));
+
+            int remaining = product.getQuantity() - item.getQuantity();
+            if (remaining < 0) {
+                throw new RuntimeException("Insufficient stock for product id: " + item.getProductId());
+            }
+
+            // Chỉ cập nhật vào bộ nhớ tạm, chưa lưu
+            product.setQuantity(remaining);
+            productsToUpdate.add(product);
+
             var orderItem = orderMapper.toOrderItem(item);
             orderItem.setOrder(order);
-
-            orderItemRepository.save(orderItem);
+            orderItemsToSave.add(orderItem);
         }
 
+        productRepository.saveAll(productsToUpdate);
+        orderItemRepository.saveAll(orderItemsToSave);
+
+        eventPublisher.publishEvent(new OrderCreatedEvent(order));
         return orderMapper.toOrderResponse(order);
     }
 
@@ -113,6 +161,25 @@ public class OrderServiceImpl implements OrderService {
         var order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
 
+        OrderStatus orderStatus;
+        try {
+            orderStatus = OrderStatus.valueOf(request.getOrderStatus().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new AppException(ErrorCode.INVALID_KEY);
+        }
+
+        //Cập nhật số lượng
+        var orderItemList = orderItemRepository.findAllByOrderId(order.getId());
+        for (var item : orderItemList) {
+            Product product = productRepository.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new RuntimeException("Order not found with id: " + item.getProduct().getId()));
+            if (orderStatus.equals(OrderStatus.CANCELLED) || orderStatus.equals(OrderStatus.RETURNED)) {
+                product.setQuantity(product.getQuantity() + item.getQuantity());
+                productRepository.save(product);
+            }
+        }
+
+        //Cập nhật Order
         orderMapper.updateOrderFromRequest(request, order);
         orderRepository.save(order);
         return orderMapper.toOrderResponse(order);

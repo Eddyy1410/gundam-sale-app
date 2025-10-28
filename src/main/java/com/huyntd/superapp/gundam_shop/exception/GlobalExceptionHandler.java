@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 // 3. @InitBinder: Tùy chỉnh việc liên kết dữ liệu (Data Binding)
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingException(Exception ex) {
-        System.out.println(ex.getMessage());
-        return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode()).body(
-                ApiResponse.builder()
-                        .success(false)
-                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
-                        .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
-                        .build()
-        );
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    ResponseEntity<ApiResponse> handlingException(Exception ex) {
+//        System.out.println(ex);
+//        return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatusCode()).body(
+//                ApiResponse.builder()
+//                        .success(false)
+//                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+//                        .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+//                        .build()
+//        );
+//    }
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException ex) {
