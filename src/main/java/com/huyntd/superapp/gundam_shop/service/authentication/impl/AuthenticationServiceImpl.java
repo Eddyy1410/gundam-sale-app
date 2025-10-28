@@ -1,13 +1,15 @@
 package com.huyntd.superapp.gundam_shop.service.authentication.impl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.huyntd.superapp.gundam_shop.configuration.GoogleTokenVerifier;
+import com.huyntd.superapp.gundam_shop.configuration.util.CustomUserDetails;
+import com.huyntd.superapp.gundam_shop.configuration.component.GoogleTokenVerifier;
 import com.huyntd.superapp.gundam_shop.dto.request.*;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
 import com.huyntd.superapp.gundam_shop.model.InvalidatedToken;
+import com.huyntd.superapp.gundam_shop.model.User;
 import com.huyntd.superapp.gundam_shop.repository.InvalidatedTokenRepository;
 import com.huyntd.superapp.gundam_shop.repository.UserRepository;
 import com.huyntd.superapp.gundam_shop.service.authentication.AuthenticationService;
@@ -23,6 +25,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,13 +37,14 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
-public class AuthenticationServiceImplement implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
@@ -91,7 +96,7 @@ public class AuthenticationServiceImplement implements AuthenticationService {
         }
     }
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    public SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         //JWSVerifier = Json Web Signature Verifier
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -114,6 +119,67 @@ public class AuthenticationServiceImplement implements AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
+    }
+
+    // Phiên bản verifyToken không bắt Exception chỉ return null khi có lỗi xảy ra
+    // đảm bảo Interceptor không bị gián đoạn và Spring Security có thể xử lý việc từ chối truy cập một cách duyên dáng. :))))
+    public SignedJWT verifyTokenWebsocket(String token) {
+        try {
+            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+            var verified = signedJWT.verify(verifier);
+
+            // 1. Kiểm tra chữ ký và thời hạn
+            if (!verified || !expiryTime.after(new Date())) {
+                return null;
+            }
+
+            // 2. Kiểm tra Blacklist (Nếu bị vô hiệu hóa)
+            if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+                return null;
+            }
+
+            return signedJWT;
+
+        } catch (JOSEException | ParseException e) {
+            log.error("Cannot create JWT ---> ", e);
+            return null;
+        }
+    }
+
+    // Cái này để dùng trong WebsocketAuthInterceptor.jav (bearer token cho message Websocket)
+    @Override
+    public Authentication getAuthentication(String token) {
+
+        SignedJWT signedJWT = verifyTokenWebsocket(token);
+
+        if (signedJWT == null) return null;
+
+        try {
+            String email = signedJWT.getJWTClaimsSet().getSubject();
+            Optional<User> user = userRepository.findByEmail(email);
+
+            if (user.isEmpty()) {
+                // Không ném AppException, mà chỉ log lỗi và trả về null an toàn
+                log.warn("User not found from valid JWT: {}", email);
+                return null;
+            }
+
+            // Tạo CustomUserDetails và Authentication
+            CustomUserDetails userDetails = new CustomUserDetails(user.get());
+
+            return new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+            );
+
+        } catch (Exception e) {
+            log.error("JWT Authentication failed: ", e);
+            return null;
+        }
+
     }
 
     @Override

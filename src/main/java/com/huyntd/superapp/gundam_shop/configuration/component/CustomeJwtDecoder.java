@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.configuration;
+package com.huyntd.superapp.gundam_shop.configuration.component;
 
 import com.huyntd.superapp.gundam_shop.dto.request.IntrospectRequest;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
@@ -53,7 +53,7 @@ public class CustomeJwtDecoder implements JwtDecoder {
                     .build());
 
             if (!response.isValid())
-                throw new AppException(ErrorCode.INVALID_KEY);
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         } catch (JOSEException | ParseException e) {
             throw new JwtException(e.getMessage());

@@ -24,7 +24,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 
@@ -51,6 +51,9 @@ public class User {
     @LastModifiedDate
     @Column(name = "updated_at")
     Date updatedAt;
+
+    @Column(name = "fcm_token")
+    private String fcmToken;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Cart cart;
