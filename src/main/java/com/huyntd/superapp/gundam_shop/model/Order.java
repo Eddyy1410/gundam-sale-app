@@ -45,7 +45,7 @@ public class Order {
 
     @CreatedDate
     @Column(name = "order_date", updatable = false)
-    LocalDateTime OrderDate;
+    LocalDateTime orderDate;
 
     @OneToOne(mappedBy = "order")
     Payment payment;

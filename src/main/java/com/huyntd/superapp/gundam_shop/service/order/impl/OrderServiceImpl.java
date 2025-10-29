@@ -187,7 +187,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponse> getOrdersToday(int page, int size, String sortBy, String sortDir, String status) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDir, sortBy));
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy)
+        );
         Page<Order> orderPage = orderRepository.findAllByStatus(OrderStatus.valueOf(status.toUpperCase()), pageable)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
         return  orderPage.map(orderMapper::toOrderResponse);
