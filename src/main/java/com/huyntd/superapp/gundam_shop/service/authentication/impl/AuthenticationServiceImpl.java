@@ -73,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .issuer("huyntd.com") // chỗ này là người chịu trách nhiệm cái gì đó, nói chung là để domain project vào
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()
                 ))
                 .jwtID(UUID.randomUUID().toString())
                 // đặt tên claim là "scope" nó sẽ được MẶC ĐỊNH mapping "SCOPE_****" để thành scope dùng cho authorization
