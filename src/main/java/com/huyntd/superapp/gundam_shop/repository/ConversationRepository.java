@@ -16,7 +16,8 @@ public interface ConversationRepository extends JpaRepository<Conversation, Inte
             "cust.fullName, " +
             "m.content, " +
             "m.sentAt, " +
-            "cust.id " +
+            "cust.id, " +
+            "m.sender.id" +
             ") " +
             "FROM Conversation c " +
             "JOIN c.customer cust " + // Giả sử có quan hệ @ManyToOne đến Customer
