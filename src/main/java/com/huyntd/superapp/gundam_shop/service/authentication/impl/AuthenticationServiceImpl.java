@@ -238,6 +238,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+
     @Override
     public Void logout(LogoutRequest request) throws JOSEException, ParseException {
         var signedToken = verifyToken(request.getToken());
