@@ -2,6 +2,7 @@ package com.huyntd.superapp.gundam_shop.service.cart.impl;
 
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateCartItemRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateCartRequest;
+import com.huyntd.superapp.gundam_shop.dto.response.CartItemResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.CartResponse;
 import com.huyntd.superapp.gundam_shop.mapper.CartMapper;
 import com.huyntd.superapp.gundam_shop.model.Cart;
@@ -116,10 +117,14 @@ public class CartServiceImpl implements CartService {
             new RuntimeException("Cart not found");
         }
 
-        var cartItemList = new ArrayList<UpdateCartItemRequest>();
+        var cartItemList = new ArrayList<CartItemResponse>();
         var searchList = cartItemRepository.findAllByCartId(cart.getId());
         for (var item : searchList) {
             var cartItem = cartMapper.toCartResponse(item);
+            var product = productRepository.findById(cartItem.getProductId());
+            cartItem.setProductName(product.get().getName());
+            cartItem.setProductImage(product.get().getProductImages().get(0).getImageUrl());
+            cartItem.setProductPrice(product.get().getPrice().doubleValue());
             cartItemList.add(cartItem);
         }
 

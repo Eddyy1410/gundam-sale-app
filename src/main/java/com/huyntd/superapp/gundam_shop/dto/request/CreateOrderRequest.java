@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateOrderRequest {
     private int userId;
-    private BigDecimal totalPrice;
+    private double totalPrice;
     private String paymentMethod;
     private String billingAddress;
     private List<OrderItemRequest> orderItems;
