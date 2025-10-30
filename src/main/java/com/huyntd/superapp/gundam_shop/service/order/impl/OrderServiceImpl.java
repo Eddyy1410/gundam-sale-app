@@ -31,7 +31,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -195,5 +197,32 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> orderPage = orderRepository.findAllByStatus(OrderStatus.valueOf(status.toUpperCase()), pageable)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
         return  orderPage.map(orderMapper::toOrderResponse);
+    }
+
+    @Override
+    public OrderResponse updateOrderStatus(int id, String status) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+        try {
+            OrderStatus orderStatus = OrderStatus.valueOf(status);
+            order.setStatus(orderStatus);
+            orderRepository.save(order);
+            return orderMapper.toOrderResponse(order);
+        } catch (IllegalArgumentException e) {
+            throw new AppException(ErrorCode.INVALID_KEY);
+        }
+    }
+
+    @Override
+    public long getTodaysOrderCount() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+        return orderRepository.countOrdersToday(startOfDay, endOfDay);
+    }
+
+    @Override
+    public long countPendingOrders() {
+        return orderRepository.countByStatus(OrderStatus.PENDING);
     }
 }

@@ -73,7 +73,7 @@ public class OrderController {
     }
 
 
-    @GetMapping
+    @GetMapping("/today")
     public ApiResponse<Page<OrderResponse>> getOrdersToday(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -84,6 +84,33 @@ public class OrderController {
         var result = orderService.getOrdersToday(page, size, sortBy, sortDir, status);
         return ApiResponse.<Page<OrderResponse>>builder()
                 .result(result)
+                .build();
+    }
+
+    @PutMapping("{id}/status")
+    public ApiResponse<OrderResponse> updateOrderStatus(
+            @PathVariable int id,
+            @RequestParam String status
+    ){
+        var result = orderService.updateOrderStatus(id, status);
+        return ApiResponse.<OrderResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @GetMapping("todays/count")
+    public ApiResponse<Long> getTodaysOrderCount() {
+        long count = orderService.getTodaysOrderCount();
+        return ApiResponse.<Long>builder()
+                .result(count)
+                .build();
+    }
+
+    @GetMapping("pending/count")
+    public ApiResponse<Long> countPendingOrders() {
+        long count = orderService.countPendingOrders();
+        return ApiResponse.<Long>builder()
+                .result(count)
                 .build();
     }
 

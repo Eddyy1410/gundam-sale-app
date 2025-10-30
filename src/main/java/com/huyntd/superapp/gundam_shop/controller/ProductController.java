@@ -3,6 +3,7 @@ package com.huyntd.superapp.gundam_shop.controller;
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.ProductCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.ProductResponse;
+import com.huyntd.superapp.gundam_shop.model.Product;
 import com.huyntd.superapp.gundam_shop.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -118,5 +120,21 @@ public class ProductController {
         return ApiResponse.<Void>builder()
                 .message("Image uploaded successfully")
                 .build();
+    }
+
+    /**
+     * Lấy danh sách sản phẩm sắp hết hàng
+     */
+    @GetMapping("/low-stock")
+    public List<ProductResponse> getLowStock(@RequestParam(defaultValue = "5") int threshold) {
+        return productService.getLowStockProducts(threshold);
+    }
+
+    /**
+     * Đếm số lượng sản phẩm sắp hết hàng
+     */
+    @GetMapping("/low-stock-count")
+    public long getLowStockCount(@RequestParam(defaultValue = "5") int threshold) {
+        return productService.countLowStockProducts(threshold);
     }
 }

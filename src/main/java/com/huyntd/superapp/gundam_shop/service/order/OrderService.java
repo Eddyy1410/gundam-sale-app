@@ -13,4 +13,8 @@ public interface OrderService {
     OrderResponse createOrder (CreateOrderRequest request);
     OrderResponse updateOrder (int id, UpdateOrderRequest request);
     Page<OrderResponse> getOrdersToday (int page, int size, String sortBy, String sortDir, String status);
+    OrderResponse updateOrderStatus (int id, String status);
+
+    long getTodaysOrderCount();
+    long countPendingOrders();
 }

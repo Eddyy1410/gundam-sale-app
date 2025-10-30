@@ -12,6 +12,7 @@ import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
 import com.huyntd.superapp.gundam_shop.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
-    private final ProductMapper mapper;
+//    @Qualifier("productMapperImpl")
+    private final ProductMapper productMapper;
 
     @Value("${upload.path:uploads}")
     private String uploadPath;
@@ -43,26 +47,26 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = productRepository.findAll(pageable);
         products.forEach(p -> log.info("Product entity: id={}, name={}, images={}",
                 p.getId(), p.getName(), p.getProductImages() != null ? p.getProductImages().size() : 0));
-        return products.map(mapper::toDTO);
+        return products.map(productMapper::toDTO);
     }
 
     @Override
     public Page<ProductResponse> searchByName(String keyword, Pageable pageable) {
-        return productRepository.findByNameContainingIgnoreCase(keyword, pageable).map(mapper::toDTO);
+        return productRepository.findByNameContainingIgnoreCase(keyword, pageable).map(productMapper::toDTO);
     }
 
     @Override
     public Page<ProductResponse> getByCategory(int categoryId, Pageable pageable) {
-        return productRepository.findByCategory_Id(categoryId, pageable).map(mapper::toDTO);
+        return productRepository.findByCategory_Id(categoryId, pageable).map(productMapper::toDTO);
     }
 
     @Override
     public ProductResponse create(ProductCreateRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        Product product = mapper.toEntity(request);
+        Product product = productMapper.toEntity(request);
         product.setCategory(category);
-        return mapper.toDTO(productRepository.save(product));
+        return productMapper.toDTO(productRepository.save(product));
     }
 
     @Override
@@ -80,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
         existing.setQuantity(request.getQuantity());
         existing.setCategory(category);
 
-        return mapper.toDTO(productRepository.save(existing));
+        return productMapper.toDTO(productRepository.save(existing));
     }
 
     @Override
@@ -92,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getById(int id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        return mapper.toDTO(product);
+        return productMapper.toDTO(product);
     }
 
     @Override
@@ -112,5 +116,17 @@ public class ProductServiceImpl implements ProductService {
                 .imageUrl("/uploads/" + fileName)
                 .build();
         productImageRepository.save(image);
+    }
+
+    @Override
+    public List<ProductResponse> getLowStockProducts(int threshold) {
+        List<Product> products = productRepository.findByQuantityLessThanEqual(threshold);
+
+        return products.stream().map(productMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public long countLowStockProducts(int threshold) {
+        return productRepository.countLowStock(threshold);
     }
 }
