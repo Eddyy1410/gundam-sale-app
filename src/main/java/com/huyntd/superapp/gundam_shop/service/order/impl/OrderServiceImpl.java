@@ -4,7 +4,6 @@ import com.huyntd.superapp.gundam_shop.dto.request.CreateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderItemResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
-import com.huyntd.superapp.gundam_shop.event.OrderCreatedEvent;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
 import com.huyntd.superapp.gundam_shop.mapper.OrderMapper;
@@ -14,17 +13,17 @@ import com.huyntd.superapp.gundam_shop.model.OrderItem;
 import com.huyntd.superapp.gundam_shop.model.Product;
 import com.huyntd.superapp.gundam_shop.model.enums.OrderStatus;
 import com.huyntd.superapp.gundam_shop.model.enums.PaymentMethod;
+import com.huyntd.superapp.gundam_shop.repository.CartRepository;
 import com.huyntd.superapp.gundam_shop.repository.OrderItemRepository;
 import com.huyntd.superapp.gundam_shop.repository.OrderRepository;
 import com.huyntd.superapp.gundam_shop.repository.ProductRepository;
+import com.huyntd.superapp.gundam_shop.service.cart.CartService;
 import com.huyntd.superapp.gundam_shop.service.category.CategoryService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +43,8 @@ public class OrderServiceImpl implements OrderService {
     ProductRepository productRepository;
     OrderRepository orderRepository;
     OrderItemRepository orderItemRepository;
-    ApplicationEventPublisher eventPublisher;
+    CartService cartService;
+
     OrderMapper orderMapper;
 
     @Override
@@ -126,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.PENDING);
         order.setPaymentMethod(paymentMethod);
-        var orderResponse = orderRepository.save(order);
+        orderRepository.save(order);
 
         List<Product> productsToUpdate = new ArrayList<>();
         List<OrderItem> orderItemsToSave = new ArrayList<>();
@@ -147,13 +147,22 @@ public class OrderServiceImpl implements OrderService {
             var orderItem = orderMapper.toOrderItem(item);
             orderItem.setOrder(order);
             orderItemsToSave.add(orderItem);
+
+            cartService.removeCart(item.getProductId(), request.getUserId());
         }
 
         productRepository.saveAll(productsToUpdate);
         orderItemRepository.saveAll(orderItemsToSave);
 
-        eventPublisher.publishEvent(new OrderCreatedEvent(order));
-        return orderMapper.toOrderResponse(order);
+        order.setOrderItems(orderItemsToSave);
+        orderRepository.save(order);
+
+
+
+        var response = orderMapper.toOrderResponse(order);
+        var orderItemList = get(response.getId()).getOrderItems();
+        response.setOrderItems(orderItemList);
+        return response;
     }
 
     @Override
@@ -181,8 +190,12 @@ public class OrderServiceImpl implements OrderService {
 
         //Cập nhật Order
         orderMapper.updateOrderFromRequest(request, order);
+        order.setStatus(orderStatus);
         orderRepository.save(order);
-        return orderMapper.toOrderResponse(order);
+        var response = orderMapper.toOrderResponse(order);
+        var list = get(response.getId()).getOrderItems();
+        response.setOrderItems(list);
+        return response;
     }
 
     @Override

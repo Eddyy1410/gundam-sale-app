@@ -30,6 +30,7 @@ import static com.huyntd.superapp.gundam_shop.service.payment.impl.VNPAYLibrary.
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
+
     PaymentService paymentService;
     VNPAYService  vNPAYService;
     MoMoService  moMoService;
@@ -42,7 +43,16 @@ public class PaymentController {
     public ResponseEntity<?> createVNPAYPayment(@RequestBody PaymentRequest paymentRequest) {
         long amount = (long) paymentRequest.getAmount();
         String vnpayUrl = vNPAYService.createPaymentUrl(amount, paymentRequest.getOrderId());
-        return ResponseEntity.ok(Map.of("paymentUrl", vnpayUrl));
+
+        Map<String, String> result = new HashMap<>();
+        result.put("paymentUrl", vnpayUrl);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("code", 1000);
+        response.put("result", result);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/vnpay-return")
@@ -52,7 +62,7 @@ public class PaymentController {
         String vnp_SecureHash = params.get("vnp_SecureHash");
         if (vnp_SecureHash == null) {
             log.error("Missing vnp_SecureHash");
-            return new RedirectView("vnPayConfig.getUrlFail()");
+            return new RedirectView("myapp://payment-fail");
         }
 
         // --- B1: Lấy nguyên query string mà không sort ---
@@ -88,15 +98,15 @@ public class PaymentController {
             String[] parts = txnRef.split("_");
             if (!isValid || !"00".equals(responseCode) || !"00".equals(transactionStatus)) {
                 paymentService.updatePayment(Integer.parseInt(parts[1]), Integer.parseInt(parts[0]), "FAILED");
-                return new RedirectView("vnPayConfig.getUrlFail()");
+                return new RedirectView("myapp://payment-fail");
             }
 
             paymentService.updatePayment(Integer.parseInt(parts[1]), Integer.parseInt(parts[0]), "SUCCESS");
-            return new RedirectView("https://www.youtube.com/watch?v=pN34FNbOKXc");
+            return new RedirectView("myapp://payment-success");
 
         } catch (Exception e) {
             log.error("Error processing VNPay return", e);
-            return new RedirectView("vnPayConfig.getUrlFail()");
+            return new RedirectView("myapp://payment-fail");
         }
     }
 
@@ -107,7 +117,16 @@ public class PaymentController {
     public ResponseEntity<?> createMoMoPayment(@RequestBody PaymentRequest paymentRequest) throws Exception {
         long amount = (long) paymentRequest.getAmount();
         String momoUrl = moMoService.createPaymentUrl(amount, paymentRequest.getOrderId());
-        return ResponseEntity.ok(Map.of("paymentUrl", momoUrl));
+
+        Map<String, String> result = new HashMap<>();
+        result.put("paymentUrl", momoUrl);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("code", 1000);
+        response.put("result", result);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/momo-return")
@@ -131,10 +150,10 @@ public class PaymentController {
             // ✅ Xử lý kết quả thanh toán
             if ("0".equals(resultCode) && "Successful.".equalsIgnoreCase(message)) {
                 paymentService.updatePayment(Integer.parseInt(list[1]), Integer.parseInt(list[0]), "Success");
-                return new RedirectView("https://www.youtube.com/watch?v=pN34FNbOKXc");
+                return new RedirectView("myapp://payment-success");
             } else {
                 paymentService.updatePayment(Integer.parseInt(list[1]), Integer.parseInt(list[0]), "FAILED");
-                return new RedirectView("https://yourdomain.com/payment/fail");
+                return new RedirectView("myapp://payment-fail");
             }
         } catch (Exception e) {
             e.printStackTrace();

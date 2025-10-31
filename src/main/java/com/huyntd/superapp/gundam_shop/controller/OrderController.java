@@ -4,6 +4,7 @@ import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.CreateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
+import com.huyntd.superapp.gundam_shop.service.cart.CartService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     OrderService orderService;
+    CartService cartService;
 
     @GetMapping("/status/user/{id}")
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> getOrdersStatus(@PathVariable int id, @RequestParam String status, Pageable pageable){
