@@ -3,6 +3,7 @@ package com.huyntd.superapp.gundam_shop.controller;
 import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,6 +71,12 @@ public class UserController {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateMyProfile(request))
                 .build();
+    }
+
+    @DeleteMapping("/me")
+    ApiResponse<Void> deleteMyAccount(@RequestBody @Valid com.huyntd.superapp.gundam_shop.dto.request.DeleteAccountRequest request) {
+        userService.deleteMyAccount(request.getPhone());
+        return ApiResponse.<Void>builder().result(null).message("Account deleted successfully").build();
     }
 
     @GetMapping()
