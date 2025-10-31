@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.huyntd.superapp.gundam_shop.dto.request.UserCreateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserOAuth2RegisterRequest;
+import com.huyntd.superapp.gundam_shop.dto.request.UserProfileUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserRegisterRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UserUpdateRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.UserResponse;
@@ -126,14 +127,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateMyProfile(com.huyntd.superapp.gundam_shop.dto.request.UserProfileUpdateRequest request) {
+    public UserResponse updateMyProfile(UserProfileUpdateRequest request) {
         var ctx = SecurityContextHolder.getContext();
         String name = ctx.getAuthentication().getName();
 
         User user = userRepository.findByEmail(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (request.getFullName() != null) user.setFullName(request.getFullName());
-        if (request.getPhone() != null) user.setPhone(request.getPhone());
+        // If fullName provided, ensure it's different from current full name
+        if (request.getFullName() != null) {
+            String newFullName = request.getFullName().trim();
+            String currentFullName = user.getFullName() == null ? "" : user.getFullName().trim();
+            if (newFullName.equals(currentFullName)) {
+                throw new AppException(ErrorCode.NAME_SAME_AS_CURRENT);
+            }
+            user.setFullName(newFullName);
+        }
+
+        if (request.getPhone() != null) {
+            String newPhone = request.getPhone().trim();
+            String currentPhone = user.getPhone() == null ? "" : user.getPhone().trim();
+            if (newPhone.equals(currentPhone)) {
+                throw new AppException(ErrorCode.PHONE_SAME_AS_CURRENT);
+            }
+            user.setPhone(newPhone);
+        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -152,6 +169,25 @@ public class UserServiceImpl implements UserService {
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Override
+    public void deleteMyAccount(String phoneConfirmation) {
+        var ctx = SecurityContextHolder.getContext();
+        String email = ctx.getAuthentication().getName();
+        if (email == null || email.isBlank()) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String currentPhone = user.getPhone() == null ? "" : user.getPhone().trim();
+        String providedPhone = phoneConfirmation == null ? "" : phoneConfirmation.trim();
+
+        if (!providedPhone.equals(currentPhone)) {
+            throw new AppException(ErrorCode.PHONE_CONFIRM_INCORRECT);
+        }
+
+        // Delete the user. If you prefer soft-delete, replace with a flag and save.
+        userRepository.delete(user);
     }
 
 }

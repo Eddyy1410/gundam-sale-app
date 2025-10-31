@@ -21,5 +21,6 @@ public interface UserService {
     Optional<User> createOAuth2(UserOAuth2RegisterRequest request);
     void changePassword(String currentPassword, String newPassword);
     UserResponse updateMyProfile(UserProfileUpdateRequest request);
+    void deleteMyAccount(String phoneConfirmation);
     void saveFcmToken(String fcmToken);
 }

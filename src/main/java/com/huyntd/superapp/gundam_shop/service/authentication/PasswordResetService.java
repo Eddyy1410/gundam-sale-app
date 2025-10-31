@@ -93,12 +93,31 @@ public class PasswordResetService {
 		User user = maybe.get();
 		String stored = resetNonceStore.get(user.getEmail());
 		if (stored == null || !stored.equals(code)) {
-			throw new AppException(ErrorCode.UNAUTHENTICATED);
+			// Treat an incorrect or missing code as an invalid reset code
+			throw new AppException(ErrorCode.INVALID_CODE);
 		}
 
 		user.setPasswordHash(passwordEncoder.encode(newPlainPassword));
 		resetNonceStore.remove(user.getEmail());
 		userRepository.save(user);
+	}
+
+	/**
+	 * Verify a reset code without changing the password. Useful for a separate "verify code" step.
+	 * Throws INVALID_CODE when code missing/incorrect or UNAUTHENTICATED when code blank.
+	 */
+	public void verifyCode(String email, String code) {
+		if (code == null || code.trim().isEmpty()) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+		Optional<User> maybe = userRepository.findByEmail(email);
+		if (maybe.isEmpty()) throw new AppException(ErrorCode.USER_NOT_EXISTED);
+
+		User user = maybe.get();
+		String stored = resetNonceStore.get(user.getEmail());
+		if (stored == null || !stored.equals(code)) {
+			throw new AppException(ErrorCode.INVALID_CODE);
+		}
+		// keep the nonce until reset-password is called; do not remove here
 	}
 
 }
