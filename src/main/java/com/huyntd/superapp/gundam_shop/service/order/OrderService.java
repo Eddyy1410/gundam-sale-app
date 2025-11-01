@@ -10,6 +10,6 @@ public interface OrderService {
     Page<OrderResponse> getOrdersByStatus (Pageable pageable, String status, int userId);
     Page<OrderResponse> getCustomerOrders (Pageable pageable, int userId);
     OrderResponse get (int orderId);
-    OrderResponse createOrder (CreateOrderRequest request);
+    OrderResponse createOrder (CreateOrderRequest request, boolean status);
     OrderResponse updateOrder (int id, UpdateOrderRequest request);
 }

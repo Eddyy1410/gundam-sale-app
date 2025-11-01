@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse createOrder(CreateOrderRequest request) {
+    public OrderResponse createOrder(CreateOrderRequest request, boolean status) {
         var order = orderMapper.toOrder(request);
         order.setOrderDate(LocalDateTime.now());
 
@@ -147,7 +147,9 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setOrder(order);
             orderItemsToSave.add(orderItem);
 
-            cartService.removeCart(item.getProductId(), request.getUserId());
+            if(!status){
+                cartService.removeCart(item.getProductId(), request.getUserId());
+            }
         }
 
         productRepository.saveAll(productsToUpdate);
@@ -155,8 +157,6 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(orderItemsToSave);
         orderRepository.save(order);
-
-
 
         var response = orderMapper.toOrderResponse(order);
         var orderItemList = get(response.getId()).getOrderItems();
