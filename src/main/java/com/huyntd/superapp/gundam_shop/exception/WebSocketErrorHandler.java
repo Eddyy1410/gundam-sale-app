@@ -3,6 +3,7 @@ package com.huyntd.superapp.gundam_shop.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Slf4j
@@ -18,6 +19,13 @@ public class WebSocketErrorHandler {
     public WebSocketErrorResponse handleAppException(AppException ex) {
         log.error("WebSocket AppException: {}", ex.getErrorCode().getMessage());
         return new WebSocketErrorResponse(ex.getErrorCode());
+    }
+
+    @MessageExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    @SendToUser(ERROR_QUEUE)
+    public WebSocketErrorResponse handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex) {
+        log.error("UNCAUGHT WebSocket ERROR: ", ex);
+        return new WebSocketErrorResponse(ErrorCode.UNAUTHENTICATED);
     }
 
     // Xử lý lỗi không xác định (Internal Server Error)

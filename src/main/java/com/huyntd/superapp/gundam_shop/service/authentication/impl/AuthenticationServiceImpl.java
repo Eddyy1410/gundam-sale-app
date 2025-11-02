@@ -3,11 +3,13 @@ package com.huyntd.superapp.gundam_shop.service.authentication.impl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.huyntd.superapp.gundam_shop.configuration.util.CustomUserDetails;
 import com.huyntd.superapp.gundam_shop.configuration.component.GoogleTokenVerifier;
+import com.huyntd.superapp.gundam_shop.dto.UserPrincipal;
 import com.huyntd.superapp.gundam_shop.dto.request.*;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
 import com.huyntd.superapp.gundam_shop.exception.ErrorCode;
+import com.huyntd.superapp.gundam_shop.mapper.UserMapper;
 import com.huyntd.superapp.gundam_shop.model.InvalidatedToken;
 import com.huyntd.superapp.gundam_shop.model.User;
 import com.huyntd.superapp.gundam_shop.repository.InvalidatedTokenRepository;
@@ -47,6 +49,7 @@ import java.util.UUID;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     UserRepository userRepository;
+    UserMapper userMapper;
     InvalidatedTokenRepository invalidatedTokenRepository;
 
     //@NonFinal không cần cái này vì đã khai báo là static (đảm bảo thuộc về class không thuộc về object)
@@ -160,6 +163,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             String email = signedJWT.getJWTClaimsSet().getSubject();
+            log.info("Email: {}", email);
             Optional<User> user = userRepository.findByEmail(email);
 
             if (user.isEmpty()) {
@@ -168,8 +172,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return null;
             }
 
+            // 1. Dùng Mapper chuyển Entity sang Principal DTO
+            UserPrincipal principalDTO = userMapper.toUserPrincipal(user.get());
+
             // Tạo CustomUserDetails và Authentication
-            CustomUserDetails userDetails = new CustomUserDetails(user.get());
+            CustomUserDetails userDetails = new CustomUserDetails(principalDTO);
 
             return new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities()

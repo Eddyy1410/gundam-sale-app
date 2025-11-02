@@ -1,5 +1,7 @@
 package com.huyntd.superapp.gundam_shop.service.message.impl;
 
+import com.google.protobuf.Api;
+import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.MessageRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.MessageResponse;
 import com.huyntd.superapp.gundam_shop.exception.AppException;
@@ -35,34 +37,22 @@ public class MessageServiceImpl implements MessageService {
 
 
     @Override
-    public Message save(MessageRequest request, int senderId) {
+    public MessageResponse save(MessageRequest request, int senderId) {
 
+        Conversation conversation = conversationRepository.findById(request.getConversationId())
+                .orElseThrow(() -> new AppException(ErrorCode.CONVERSATION_NOT_EXISTED));
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
-        Conversation conversation = null;
-        int conversationId = request.getConversationId();
-        log.info("conversationId: {}", conversationId);
-        User staff = this.findUserHaveMinConversations();
-        if(conversationId != -1){
-            if(sender.getRole().equals(UserRole.CUSTOMER)){
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-                conversation = conversationRepository.save(Conversation.builder()
-                                .customer(sender)
-                                .staff(staff)
-                                .status(ConversationStatus.NEW)
-                                .build());
-            }
-        }else{
-            conversation = conversationRepository.findById(conversationId)
-                    .orElseThrow(() -> new RuntimeException("Conversation not found"));
-        }
-
-        Message newMessage = messageMapper.toMessage(request);
-        newMessage.setConversation(conversation);
-        newMessage.setSender(sender);
-
-
-        return messageRepository.save(newMessage);
+        return messageMapper.toMessageResponse(
+                messageRepository.save(
+                        Message.builder()
+                                .content(request.getContent())
+                                .sender(sender)
+                                .conversation(conversation)
+                                .build()
+                )
+        );
     }
 
 

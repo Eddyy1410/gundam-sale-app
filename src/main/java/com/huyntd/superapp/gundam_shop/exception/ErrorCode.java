@@ -33,6 +33,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission to access this resource!", HttpStatus.FORBIDDEN),
     CONVERSATION_ACCESS_DENIED(1008, "You are not authorized to send messages in this conversation!", HttpStatus.FORBIDDEN),
     CUSTOMER_NOT_EXISTED(1009, "Customer not existed!", HttpStatus.NOT_FOUND),
+    CONVERSATION_NOT_EXISTED(1010, "Conversation not found!", HttpStatus.NOT_FOUND)
     ;
 
     int code;
