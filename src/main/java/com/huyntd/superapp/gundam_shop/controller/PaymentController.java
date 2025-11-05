@@ -62,7 +62,7 @@ public class PaymentController {
         String vnp_SecureHash = params.get("vnp_SecureHash");
         if (vnp_SecureHash == null) {
             log.error("Missing vnp_SecureHash");
-            return new RedirectView("myapp://payment-fail");
+            return new RedirectView("myapp://payment-failed");
         }
 
         // --- B1: Lấy nguyên query string mà không sort ---
@@ -98,7 +98,7 @@ public class PaymentController {
             String[] parts = txnRef.split("_");
             if (!isValid || !"00".equals(responseCode) || !"00".equals(transactionStatus)) {
                 paymentService.updatePayment(Integer.parseInt(parts[1]), Integer.parseInt(parts[0]), "FAILED");
-                return new RedirectView("myapp://payment-fail");
+                return new RedirectView("myapp://payment-failed");
             }
 
             paymentService.updatePayment(Integer.parseInt(parts[1]), Integer.parseInt(parts[0]), "SUCCESS");
@@ -106,7 +106,7 @@ public class PaymentController {
 
         } catch (Exception e) {
             log.error("Error processing VNPay return", e);
-            return new RedirectView("myapp://payment-fail");
+            return new RedirectView("myapp://payment-failed");
         }
     }
 
@@ -153,11 +153,11 @@ public class PaymentController {
                 return new RedirectView("myapp://payment-success");
             } else {
                 paymentService.updatePayment(Integer.parseInt(list[1]), Integer.parseInt(list[0]), "FAILED");
-                return new RedirectView("myapp://payment-fail");
+                return new RedirectView("myapp://payment-failed");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new RedirectView("https://yourdomain.com/payment/fail");
+            return new RedirectView("https://yourdomain.com/payment-failed");
         }
     }
 

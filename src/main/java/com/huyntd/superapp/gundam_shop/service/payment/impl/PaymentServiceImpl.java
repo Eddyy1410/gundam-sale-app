@@ -80,7 +80,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse updatePayment(int id, int orderId, String status) {
         var order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        order.setStatus(OrderStatus.PROCESSING);
+        if(status == "Success"){
+            order.setStatus(OrderStatus.PROCESSING);
+        } else {
+            order.setStatus(OrderStatus.CANCELLED);
+        }
         orderRepository.save(order);
 
         var payment = paymentRepository.findById(id).
