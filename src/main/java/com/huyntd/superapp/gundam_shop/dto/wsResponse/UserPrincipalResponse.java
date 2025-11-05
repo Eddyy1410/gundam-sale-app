@@ -1,4 +1,4 @@
-package com.huyntd.superapp.gundam_shop.dto;
+package com.huyntd.superapp.gundam_shop.dto.wsResponse;
 
 import com.huyntd.superapp.gundam_shop.model.enums.UserRole;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserPrincipal implements Serializable {
+public class UserPrincipalResponse implements Serializable {
 
     // CHỈ LẤY CÁC TRƯỜNG NGUYÊN THỦY (Primitive) HOẶC SERIALIZABLE
     int id;

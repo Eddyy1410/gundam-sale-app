@@ -1,5 +1,6 @@
 package com.huyntd.superapp.gundam_shop.model;
 
+import com.huyntd.superapp.gundam_shop.model.enums.MessageStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -34,6 +35,10 @@ public class Message {
 
     @Column(name = "content", nullable = false, length = 200, columnDefinition = "NVARCHAR(200)")
     String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    MessageStatus status;
 
     @CreatedDate
     @Column(name = "sent_at", nullable = false, updatable = false)

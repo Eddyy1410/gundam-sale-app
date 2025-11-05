@@ -1,15 +1,14 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
+import com.huyntd.superapp.gundam_shop.dto.request.UpdateReadMessageRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.MessageResponse;
+import com.huyntd.superapp.gundam_shop.dto.wsResponse.CountResponse;
 import com.huyntd.superapp.gundam_shop.service.message.MessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +24,20 @@ public class MessageController {
     ApiResponse<List<MessageResponse>> getMessagesByCustomerId(@PathVariable int customerId) {
         return ApiResponse.<List<MessageResponse>>builder()
                 .result(messageService.getMessagesByCustomerId(customerId))
+                .build();
+    }
+
+    @GetMapping("/unread/{receiverId}")
+    ApiResponse<CountResponse> countUnreadMessagesByReceiverId(@PathVariable int receiverId) {
+        return ApiResponse.<CountResponse>builder()
+                .result(messageService.countUnreadMessagesByReceiverId(receiverId))
+                .build();
+    }
+
+    @PutMapping("/read")
+    ApiResponse<CountResponse> updateReadMessages(@RequestBody UpdateReadMessageRequest request) {
+        return ApiResponse.<CountResponse>builder()
+                .result(messageService.countReadMessagesByUserIdAndConversationId(request.getReceiverId(), request.getConversationId()))
                 .build();
     }
 }

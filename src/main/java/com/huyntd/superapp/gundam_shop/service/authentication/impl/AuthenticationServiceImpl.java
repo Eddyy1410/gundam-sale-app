@@ -3,7 +3,7 @@ package com.huyntd.superapp.gundam_shop.service.authentication.impl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.huyntd.superapp.gundam_shop.configuration.util.CustomUserDetails;
 import com.huyntd.superapp.gundam_shop.configuration.component.GoogleTokenVerifier;
-import com.huyntd.superapp.gundam_shop.dto.UserPrincipal;
+import com.huyntd.superapp.gundam_shop.dto.wsResponse.UserPrincipalResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.*;
 import com.huyntd.superapp.gundam_shop.dto.response.AuthenticationResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.IntrospectResponse;
@@ -173,7 +173,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
 
             // 1. Dùng Mapper chuyển Entity sang Principal DTO
-            UserPrincipal principalDTO = userMapper.toUserPrincipal(user.get());
+            UserPrincipalResponse principalDTO = userMapper.toUserPrincipal(user.get());
 
             // Tạo CustomUserDetails và Authentication
             CustomUserDetails userDetails = new CustomUserDetails(principalDTO);

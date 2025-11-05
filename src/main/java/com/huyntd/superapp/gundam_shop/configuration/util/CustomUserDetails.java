@@ -1,6 +1,6 @@
 package com.huyntd.superapp.gundam_shop.configuration.util;
 
-import com.huyntd.superapp.gundam_shop.dto.UserPrincipal;
+import com.huyntd.superapp.gundam_shop.dto.wsResponse.UserPrincipalResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,24 +15,24 @@ import java.util.Collections;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails, Serializable {
 
-    private final UserPrincipal userPrincipal;
+    private final UserPrincipalResponse userPrincipalResponse;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String userRole = userPrincipal.getRole().toString().toUpperCase();
+        String userRole = userPrincipalResponse.getRole().toString().toUpperCase();
         // Collections.singleton là mảng chỉ cos 1 phần tử
         // Hợp lý vì User chỉ có 1 role, nếu nhiều role thì dùng List
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userRole));
     }
 
     public int getId() {
-        return userPrincipal.getId();
+        return userPrincipalResponse.getId();
     }
 
     @Override
     public String getUsername() {
         // Trả về email của user, coi email là định danh chính của người dùng trong Spring Security
-        return userPrincipal.getEmail();
+        return userPrincipalResponse.getEmail();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class CustomUserDetails implements UserDetails, Serializable {
     }
 
     // Quan trọng: Phương thức để lấy DTO nếu cần truy cập các thông tin khác trong Controller
-    public UserPrincipal getUser() {
-        return this.userPrincipal;
+    public UserPrincipalResponse getUser() {
+        return this.userPrincipalResponse;
     }
 
 }

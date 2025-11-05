@@ -4,7 +4,6 @@ import com.huyntd.superapp.gundam_shop.configuration.util.CustomUserDetails;
 import com.huyntd.superapp.gundam_shop.dto.request.MessageRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.MessageResponse;
 import com.huyntd.superapp.gundam_shop.mapper.MessageMapper;
-import com.huyntd.superapp.gundam_shop.model.Message;
 import com.huyntd.superapp.gundam_shop.service.message.MessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -58,8 +56,8 @@ public class ChatController {
         }
 
         // 3. Kiểm tra tính toàn vẹn của DTO (Ngăn chặn NullPointerException)
-        if (userDetails.getUserPrincipal() == null) {
-            log.error("UserPrincipal bên trong CustomUserDetails bị mất (Deserialization error)");
+        if (userDetails.getUserPrincipalResponse() == null) {
+            log.error("UserPrincipalResponse bên trong CustomUserDetails bị mất (Deserialization error)");
             throw new AccessDeniedException("Session principal data corrupted.");
         }
 
@@ -71,7 +69,4 @@ public class ChatController {
         String conversationTopic = "/topic/conversation/" + customerId;
         messagingTemplate.convertAndSend(conversationTopic, savedMessage);
     }
-
-
-
 }
