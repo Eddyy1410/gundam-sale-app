@@ -149,7 +149,7 @@ public class PaymentController {
             var list = paymentCode.split("_");
             // ✅ Xử lý kết quả thanh toán
             if ("0".equals(resultCode) && "Successful.".equalsIgnoreCase(message)) {
-                paymentService.updatePayment(Integer.parseInt(list[1]), Integer.parseInt(list[0]), "Success");
+                paymentService.updatePayment(Integer.parseInt(list[1]), Integer.parseInt(list[0]), "SUCCESS");
                 return new RedirectView("myapp://payment-success");
             } else {
                 paymentService.updatePayment(Integer.parseInt(list[1]), Integer.parseInt(list[0]), "FAILED");
