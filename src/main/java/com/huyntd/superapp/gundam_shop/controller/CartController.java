@@ -31,8 +31,8 @@ public class CartController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> addToCart(@RequestParam int productId, @RequestParam int userId) {
-        boolean success = cartService.addToCart(productId, userId);
+    public ResponseEntity<?> addToCart(@RequestParam int productId, @RequestParam int userId, @RequestParam int quantity) {
+        boolean success = cartService.addToCart(productId, userId, quantity);
         return ResponseEntity.ok(
                 ApiResponse.<Boolean>builder()
                         .result(success)

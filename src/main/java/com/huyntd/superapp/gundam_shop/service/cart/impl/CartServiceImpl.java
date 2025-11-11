@@ -34,7 +34,7 @@ public class CartServiceImpl implements CartService {
     CartMapper cartMapper;
 
     @Override
-    public boolean addToCart(int productId, int userId) {
+    public boolean addToCart(int productId, int userId, int quantity) {
         var cart = cartRepository.findAllByUserId(userId);
 
         if (cart == null) {
@@ -57,10 +57,10 @@ public class CartServiceImpl implements CartService {
         //Không cho ra lỗi runtime khi không tìm thấy
         var search = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
         if(search.isPresent()){
-            search.get().setQuantity(search.get().getQuantity() + 1);
+            search.get().setQuantity(search.get().getQuantity() + quantity);
             cartItemRepository.save(search.get());
         } else {
-            cartItem.setQuantity(1);
+            cartItem.setQuantity(quantity);
             cartItemRepository.save(cartItem);
         }
 

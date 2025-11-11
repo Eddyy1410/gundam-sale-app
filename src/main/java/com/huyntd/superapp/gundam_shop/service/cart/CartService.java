@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface CartService {
 
-    boolean addToCart(int productId, int userId);
+    boolean addToCart(int productId, int userId, int quantity);
     boolean removeCart(int productId, int userId);
     CartResponse updateCartItem(int userId, UpdateCartRequest updateCart);
     CartResponse getCart(int userId);
