@@ -78,7 +78,6 @@ public class MessageServiceImpl implements MessageService {
 
         // 3. TÍNH TOÁN BADGE MỚI CHO RECEIVER
         int newUnreadCount = messageRepository.countUnreadMessagesForUser(receiverId);
-
         wsNotificationService.sendUnreadCountUpdate(receiverId, newUnreadCount, CountType.UNREAD_MESSAGE);
 
         return messageMapper.toMessageResponse(savedMessage);

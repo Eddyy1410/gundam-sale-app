@@ -36,7 +36,7 @@ public class WsNotificationServiceImpl implements WsNotificationService {
         // Destination: /user/queue/unread-messages
         messagingTemplate.convertAndSendToUser(
                 receiver.getEmail(),  // User ID đích
-                "/queue/unread-messages",    // Topic cá nhân
+                "/queue/counting-messages",    // Topic cá nhân
                 payload                      // Payload (DTO chứa số đếm)
         );
     }

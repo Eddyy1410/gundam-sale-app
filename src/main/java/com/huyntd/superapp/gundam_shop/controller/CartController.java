@@ -3,6 +3,7 @@ package com.huyntd.superapp.gundam_shop.controller;
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateCartRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.CartResponse;
+import com.huyntd.superapp.gundam_shop.dto.wsResponse.CountResponse;
 import com.huyntd.superapp.gundam_shop.service.cart.CartService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +59,12 @@ public class CartController {
                         .result(cart)
                         .build()
         );
+    }
+
+    @GetMapping("/total-quantity/{customerId}")
+    ApiResponse<CountResponse> totalItemsQuantityByCustomerId(@PathVariable int customerId) {
+        return ApiResponse.<CountResponse>builder()
+                .result(cartService.countItems(customerId))
+                .build();
     }
 }
