@@ -27,7 +27,7 @@ public class StoreLocation {
     @Column(name = "longitude", nullable = false, precision = 9, scale = 6)
     BigDecimal longitude;
 
-    @Column(name = "address", nullable = false, length = 200)
+    @Column(name = "address", nullable = false, length = 200, columnDefinition = "NVARCHAR(200)")
     String address;
 
 }

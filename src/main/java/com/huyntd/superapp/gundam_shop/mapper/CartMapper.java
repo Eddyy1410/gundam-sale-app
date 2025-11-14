@@ -1,6 +1,7 @@
 package com.huyntd.superapp.gundam_shop.mapper;
 
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateCartItemRequest;
+import com.huyntd.superapp.gundam_shop.dto.response.CartItemResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.CartResponse;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
 import com.huyntd.superapp.gundam_shop.model.CartItem;
@@ -11,5 +12,5 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CartMapper {
     @Mapping(target = "productId", source = "product.id")
-    UpdateCartItemRequest toCartResponse(CartItem cartItem);
+    CartItemResponse toCartResponse(CartItem cartItem);
 }

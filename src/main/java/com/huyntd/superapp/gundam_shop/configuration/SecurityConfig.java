@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/api/products",
             "/auth/forgot-password",
             "/auth/reset-password",
+            "/auth/verify-reset-code",
 
     };
 

@@ -1,9 +1,11 @@
 package com.huyntd.superapp.gundam_shop.controller;
 
+import com.google.gson.Gson;
 import com.huyntd.superapp.gundam_shop.dto.ApiResponse;
 import com.huyntd.superapp.gundam_shop.dto.request.CreateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.request.UpdateOrderRequest;
 import com.huyntd.superapp.gundam_shop.dto.response.OrderResponse;
+import com.huyntd.superapp.gundam_shop.service.cart.CartService;
 import com.huyntd.superapp.gundam_shop.service.order.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     OrderService orderService;
+    CartService cartService;
 
     @GetMapping("/status/user/{id}")
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> getOrdersStatus(@PathVariable int id, @RequestParam String status, Pageable pageable){
@@ -57,8 +60,11 @@ public class OrderController {
     }
 
     @PostMapping()
-    public ResponseEntity<? extends Object> create (@RequestBody CreateOrderRequest request) {
-        var order = orderService.createOrder(request);
+    public ResponseEntity<? extends Object> create (@RequestBody CreateOrderRequest request, @RequestParam("status") boolean status) {
+        System.out.println("🔥 Received order request: " + new Gson().toJson(request));
+        System.out.println("🔥 Status param: " + status);
+
+        var order = orderService.createOrder(request, status);
         return ResponseEntity.ok(ApiResponse.<OrderResponse>builder()
                 .result(order)
                 .build());

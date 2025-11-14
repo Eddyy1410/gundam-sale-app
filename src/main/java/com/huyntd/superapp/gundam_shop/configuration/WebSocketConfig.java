@@ -5,9 +5,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -17,7 +19,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, InitializingBean {
 
     final WebsocketAuthInterceptor stompAuthInterceptor;
     // Inject Interceptor
@@ -37,6 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Định nghĩa tiền tố cho Application (Client -> Server)
         // Ví dụ: Client gửi tin nhắn đến /app/chat
         config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
@@ -45,7 +48,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Sử dụng SockJS để hỗ trợ kết nối qua các trình duyệt cũ hơn (web)
         registry.addEndpoint("/ws-native") // HANDSHAKE endpoint
                 .setAllowedOriginPatterns("*"); // Cho phép tất cả các nguồn (hoặc định nghĩa cụ thể)
-                //.withSockJS();us
+                //.withSockJS();
     }
 
     @Override
@@ -55,4 +58,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(stompAuthInterceptor);
     }
 
+
+
+    // Phải implements thêm InitializingBean chon configuration
+    @Override
+    public void afterPropertiesSet() {
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
 }

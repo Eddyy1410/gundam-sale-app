@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface ConversationService {
     List<ConversationResponse> findConversationListForStaff(@Param("staffId") int staffId);
+    ConversationResponse findConversationByCustomerId(@Param("customerId") int customerId);
 }

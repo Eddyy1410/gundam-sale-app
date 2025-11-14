@@ -31,4 +31,12 @@ public class ConversationController {
                 .build();
     }
 
+    @GetMapping("/{customerId}")
+    ApiResponse<ConversationResponse> getConversation(@PathVariable int customerId) {
+        return ApiResponse.<ConversationResponse>builder()
+                .result(conversationService.findConversationByCustomerId(customerId))
+                .build();
+    }
+
+
 }

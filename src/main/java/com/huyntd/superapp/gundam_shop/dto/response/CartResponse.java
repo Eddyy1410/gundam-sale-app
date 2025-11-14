@@ -16,5 +16,6 @@ public class CartResponse {
     private int userId;
     private int cartId;
     private BigDecimal totalPrice;
-    private List<UpdateCartItemRequest> items;
+    private List<CartItemResponse> items;
 }
+

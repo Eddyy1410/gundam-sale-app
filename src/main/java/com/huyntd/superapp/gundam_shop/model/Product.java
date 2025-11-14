@@ -25,13 +25,13 @@ public class Product {
     @Column(name = "name", length = 100, nullable = false)
     String name;
 
-    @Column(name = "brief_description", length = 500)
+    @Column(name = "brief_description", length = 500, columnDefinition = "NVARCHAR(200)")
     String briefDescription;
 
-    @Column(name = "full_description", length = 1000)
+    @Column(name = "full_description", length = 1000, columnDefinition = "NVARCHAR(200)")
     String fullDescription;
 
-    @Column(name = "technical_specification", length = 500)
+    @Column(name = "technical_specification", length = 500, columnDefinition = "NVARCHAR(200)")
     String technicalSpecification;
 
     @Column(name = "price", nullable = false, precision = 18, scale = 2)
