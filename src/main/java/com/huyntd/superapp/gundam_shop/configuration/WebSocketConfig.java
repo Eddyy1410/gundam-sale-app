@@ -59,7 +59,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, Initia
     }
 
 
-
     // Phải implements thêm InitializingBean chon configuration
     @Override
     public void afterPropertiesSet() {
